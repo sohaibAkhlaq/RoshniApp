@@ -31,16 +31,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  bool get _isLoggedIn => _authService.isLoggedInSync;
+
   String get _initials {
-    if (_userData == null) return '?';
-    final parts = _userData!.name.split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    if (_userData != null && _userData!.name.isNotEmpty) {
+      final parts = _userData!.name.split(' ');
+      if (parts.length >= 2) {
+        return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      }
+      return _userData!.name[0].toUpperCase();
     }
-    return _userData!.name.isNotEmpty ? _userData!.name[0].toUpperCase() : '?';
+    if (_isLoggedIn) {
+      final phone = _authService.getCurrentUserPhone() ?? '';
+      if (phone.isNotEmpty) return phone.substring(phone.length - 2);
+      return 'U';
+    }
+    return 'G';
   }
 
-  bool get _isLoggedIn => _userData != null;
+  String get _displayName {
+    if (_userData != null && _userData!.name.isNotEmpty && _userData!.name != _userData!.phone) {
+      return _userData!.name;
+    }
+    if (_isLoggedIn) {
+      return 'User';
+    }
+    return 'Guest User';
+  }
+
+  String get _displayPhone {
+    if (_userData != null && _userData!.phone.isNotEmpty) {
+      return _userData!.phone;
+    }
+    if (_isLoggedIn) {
+      return _authService.getCurrentUserPhone() ?? '';
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      _userData?.name ?? 'Guest User',
+                      _displayName,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -105,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _userData?.phone ?? '',
+                      _displayPhone,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey.shade600,

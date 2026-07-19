@@ -47,6 +47,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   Future<void> _handleSignUp() async {
+    if (_isLoading) return;
+
     final name = _nameController.text.trim();
     final phone = _cleanPhone(_phoneController.text.trim());
     final password = _passwordController.text;

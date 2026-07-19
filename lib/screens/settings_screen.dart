@@ -29,6 +29,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  bool get _isLoggedIn => _authService.isLoggedInSync;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                if (_userData != null)
+                if (_isLoggedIn)
                   _buildUserInfoCard(context)
                 else
                   _buildSettingsItem(
@@ -108,6 +110,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildUserInfoCard(BuildContext context) {
     final theme = Theme.of(context);
+    final name = _userData?.name.isNotEmpty == true && _userData!.name != _userData!.phone
+        ? _userData!.name
+        : 'User';
+    final phone = _userData?.phone.isNotEmpty == true
+        ? _userData!.phone
+        : (_authService.getCurrentUserPhone() ?? '');
+    final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -141,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             alignment: Alignment.center,
             child: Text(
-              _userData!.name.isNotEmpty ? _userData!.name[0].toUpperCase() : 'U',
+              initial,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -155,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _userData!.name,
+                  name,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -164,7 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _userData!.phone,
+                  phone,
                   style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF4B5563),

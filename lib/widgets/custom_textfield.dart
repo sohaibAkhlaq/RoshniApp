@@ -46,7 +46,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF111827), // Charcoal
+                color: Color(0xFF111827),
               ),
             ),
           ),

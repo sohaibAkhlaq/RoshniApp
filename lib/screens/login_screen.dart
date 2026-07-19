@@ -43,6 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    if (_isLoading) return;
+
     final phone = _cleanPhone(_phoneController.text.trim());
     final password = _passwordController.text;
 
@@ -75,13 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
           _error = errorMsg;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMsg),
-            backgroundColor: Colors.red.shade700,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
       }
     } catch (e) {
       debugPrint("Login screen error: $e");

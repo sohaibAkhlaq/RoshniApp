@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/auth_service.dart';
 import '../widgets/feature_card.dart';
 import '../widgets/gesture_bar.dart';
 import 'profile_screen.dart';
@@ -8,11 +9,42 @@ import 'currency_screen.dart';
 import 'document_screen.dart';
 import 'photo_description_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final VoidCallback? onLogout;
   final VoidCallback? onLoginRequested;
 
   const HomeScreen({super.key, this.onLogout, this.onLoginRequested});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final AuthService _authService = AuthService();
+  String _initials = 'R';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitials();
+  }
+
+  Future<void> _loadInitials() async {
+    final data = await _authService.getCurrentUserData();
+    if (!mounted) return;
+    if (data != null && data.name.isNotEmpty && data.name != data.phone) {
+      final parts = data.name.split(' ');
+      final init = parts.length >= 2
+          ? '${parts[0][0]}${parts[1][0]}'.toUpperCase()
+          : data.name[0].toUpperCase();
+      setState(() => _initials = init);
+    } else if (_authService.isLoggedInSync) {
+      final phone = _authService.getCurrentUserPhone() ?? '';
+      setState(() => _initials = phone.isNotEmpty ? phone.substring(phone.length - 2) : 'U');
+    } else {
+      setState(() => _initials = 'G');
+    }
+  }
 
   void _openProfile(BuildContext context) {
     Navigator.of(context).push<String>(
@@ -20,9 +52,9 @@ class HomeScreen extends StatelessWidget {
     ).then((result) {
       if (!context.mounted || result == null) return;
       if (result == 'logout') {
-        onLogout?.call();
+        widget.onLogout?.call();
       } else if (result == 'login') {
-        onLoginRequested?.call();
+        widget.onLoginRequested?.call();
       }
     });
   }
@@ -52,9 +84,9 @@ class HomeScreen extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 18,
                     backgroundColor: theme.primaryColor,
-                    child: const Text(
-                      'SA',
-                      style: TextStyle(
+                    child: Text(
+                      _initials,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,

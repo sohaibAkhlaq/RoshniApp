@@ -57,18 +57,41 @@ class AuthService {
     return _auth.currentUser != null;
   }
 
+  bool get isLoggedInSync => _auth.currentUser != null;
+
   String? getUserId() => _auth.currentUser?.uid;
+
+  String? getCurrentUserPhone() {
+    final email = _auth.currentUser?.email;
+    if (email == null || !email.endsWith('@roshni.app')) return null;
+    final local = email.split('@').first;
+    return local;
+  }
 
   Future<UserData?> getCurrentUserData() async {
     final user = _auth.currentUser;
     if (user == null) return null;
     try {
       final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) return null;
+      if (!doc.exists) {
+        final phone = getCurrentUserPhone();
+        return UserData(
+          uid: user.uid,
+          name: phone ?? 'User',
+          phone: phone ?? '',
+          language: 'Urdu',
+        );
+      }
       return UserData.fromMap(user.uid, doc.data()!);
     } catch (e) {
       debugPrint("getCurrentUserData error: $e");
-      return null;
+      final phone = getCurrentUserPhone();
+      return UserData(
+        uid: user.uid,
+        name: phone ?? 'User',
+        phone: phone ?? '',
+        language: 'Urdu',
+      );
     }
   }
 
