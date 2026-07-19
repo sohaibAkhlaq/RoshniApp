@@ -43,3 +43,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase configuration (contains API keys — NEVER commit to public repos)
+android/app/google-services.json
+lib/firebase_options.dart
+firebase.json
+ios/Runner/GoogleService-Info.plist
+*.google-services.json
+*GoogleService-Info.plist
