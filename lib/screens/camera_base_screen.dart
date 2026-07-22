@@ -6,6 +6,7 @@ class CameraBaseScreen extends StatelessWidget {
   final String statusText;
   final Widget? overlayWidget;
   final Widget? bottomWidget;
+  final Widget? cameraPreviewWidget;
   final Color statusTextColor;
 
   const CameraBaseScreen({
@@ -14,6 +15,7 @@ class CameraBaseScreen extends StatelessWidget {
     required this.statusText,
     this.overlayWidget,
     this.bottomWidget,
+    this.cameraPreviewWidget,
     this.statusTextColor = Colors.white,
   });
 
@@ -75,6 +77,11 @@ class CameraBaseScreen extends StatelessWidget {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
+                      // Live camera preview (when available)
+                      if (cameraPreviewWidget != null)
+                        Positioned.fill(
+                          child: cameraPreviewWidget!,
+                        ),
                       // Subtly simulated camera grid / scanlines
                       Positioned.fill(
                         child: Opacity(

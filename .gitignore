@@ -51,3 +51,11 @@ firebase.json
 ios/Runner/GoogleService-Info.plist
 *.google-services.json
 *GoogleService-Info.plist
+
+# Hugging Face API token (per TC-5 — kept out of version control)
+lib/core/api_keys.dart
+
+.vscode/
+android/build/
+android/photo_description_md_files/
+

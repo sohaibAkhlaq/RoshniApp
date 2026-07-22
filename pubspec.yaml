@@ -39,6 +39,13 @@ dependencies:
   cloud_firestore: ^6.7.1
   permission_handler: ^12.0.3
   shared_preferences: ^2.3.4
+  camera: ^0.12.0+2
+  tflite_flutter: ^0.12.1
+  image: ^4.9.1
+
+  # HTTP client for calling the cloud captioning API
+  http: ^1.2.2
+  internet_connection_checker_plus: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +70,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/models/yolov8n.tflite
+    - assets/models/coco_labels.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
