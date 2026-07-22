@@ -46,17 +46,19 @@ class PhotoDescriptionService {
   ) {
     return _callApi(
       imageBytes,
-      prompt: 'Describe this photo in one short simple sentence for a blind person.',
+      prompt:
+          'Describe this photo in exactly one short, simple sentence for a blind user. Output ONLY the short description sentence—no intro, no reasoning, no thinking, no extra commentary.',
     );
   }
 
-  /// Generates a longer object-focused description for [imageBytes].
+  /// Generates a single-paragraph detailed description for [imageBytes].
   Future<PhotoDescriptionResult> getDetailedDescription(
     Uint8List imageBytes,
   ) {
     return _callApi(
       imageBytes,
-      prompt: 'Describe this photo in detail for a blind person — objects, people, layout, and setting.',
+      prompt:
+          'Provide a single-paragraph description of this photo for a blind user. Include the main objects, people, layout, and setting in a few clear sentences with moderate detail—longer than a single sentence, but concise and strictly confined to one single paragraph without bullet points, reasoning, or excessive depth.',
     );
   }
 
