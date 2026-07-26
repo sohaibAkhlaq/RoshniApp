@@ -59,3 +59,21 @@ lib/core/api_keys.dart
 android/build/
 android/photo_description_md_files/
 
+# Large ML training caches and scratch files
+*.pt
+*.onnx
+*.pb
+*.tar.gz
+*.data-00000-of-00001
+*.index
+PKrs_currency-master/
+test_images/
+test_notes/
+test_valid.tflite
+mobilenet_v2*.tflite
+confusion_matrix.png
+accuracy_loss_curves.png
+bin/
+lib/main_inspect.dart
+lib/main_step0_test.dart
+*.py
