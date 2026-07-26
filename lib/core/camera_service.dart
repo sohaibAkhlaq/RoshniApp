@@ -31,8 +31,14 @@ class CameraService {
   /// 2. Enumerates available cameras and selects the back-facing one.
   /// 3. Creates and initializes a [CameraController].
   ///
+  /// [resolutionPreset] defaults to [ResolutionPreset.medium] for general use.
+  /// Document Reader should pass [ResolutionPreset.high] or [ResolutionPreset.veryHigh]
+  /// for better OCR accuracy on small print.
+  ///
   /// Returns `true` on success, `false` on failure (check [errorMessage]).
-  Future<bool> initialize() async {
+  Future<bool> initialize({
+    ResolutionPreset resolutionPreset = ResolutionPreset.medium,
+  }) async {
     try {
       // Step 1: Check permissions using the existing PermissionService
       final granted = await _permissionService.areAllGranted();
@@ -66,7 +72,7 @@ class CameraService {
       // Step 3: Create and initialize the controller
       _controller = CameraController(
         backCamera,
-        ResolutionPreset.medium,
+        resolutionPreset,
         enableAudio: false, // No audio needed for object detection preview
       );
 

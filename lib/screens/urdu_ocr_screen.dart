@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'camera_base_screen.dart';
 import '../widgets/primary_button.dart';
+import '../core/camera_service.dart';
+import '../core/ocr_service.dart';
 
 class UrduOCRScreen extends StatefulWidget {
   const UrduOCRScreen({super.key});
@@ -10,24 +13,85 @@ class UrduOCRScreen extends StatefulWidget {
 }
 
 class _UrduOCRScreenState extends State<UrduOCRScreen> {
+  final CameraService _cameraService = CameraService();
+  final OcrService _ocrService = OcrService();
+
   String _status = 'Initializing camera\nPoint at signboard - hold steady';
   String _detectedText = '';
   Color _statusColor = Colors.white;
+  bool _isProcessing = false;
 
-  void _simulateTextFound() {
-    setState(() {
-      _status = '';
-      _detectedText = 'بینک آف پنجاب\nکیش کاؤنٹر نمبر 3\nصبح 9 سے شام 5 بجے تک کھلا';
-      _statusColor = Colors.white;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
   }
 
-  void _simulateBlur() {
+  Future<void> _initializeCamera() async {
+    // Tesseract desperately needs high resolution for complex cursive scripts like Urdu.
+    final success = await _cameraService.initialize(
+      resolutionPreset: ResolutionPreset.veryHigh,
+    );
+    if (!mounted) return;
+    
+    if (!success) {
+      setState(() {
+        _status = _cameraService.errorMessage ?? 'Failed to initialize camera.';
+        _statusColor = const Color(0xFFEF4444);
+      });
+    } else {
+      setState(() {
+        _status = 'Point at signboard - hold steady';
+        _statusColor = Colors.white;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraService.dispose();
+    super.dispose();
+  }
+
+  Future<void> _captureAndRecognize() async {
+    if (!_cameraService.isInitialized || _cameraService.controller == null || _isProcessing) return;
+
     setState(() {
-      _status = 'No readable text found\n\nقریب جا کر دوبارہ کوشش کریں';
-      _detectedText = '';
-      _statusColor = const Color(0xFFEF4444);
+      _isProcessing = true;
+      _status = 'Detecting text\nRunning Tesseract OCR — Urdu model';
+      _statusColor = Colors.white;
     });
+
+    try {
+      final image = await _cameraService.controller!.takePicture();
+      final result = await _ocrService.recognizeText(image.path);
+
+      if (!mounted) return;
+
+      if (result.success && result.text.isNotEmpty) {
+        setState(() {
+          _status = '';
+          _detectedText = result.text;
+          _statusColor = Colors.white;
+          _isProcessing = false;
+        });
+      } else {
+        setState(() {
+          _status = 'No readable text found\n\nقریب جا کر دوبارہ کوشش کریں';
+          _detectedText = '';
+          _statusColor = const Color(0xFFEF4444);
+          _isProcessing = false;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = 'No readable text found\n\nقریب جا کر دوبارہ کوشش کریں';
+        _detectedText = '';
+        _statusColor = const Color(0xFFEF4444);
+        _isProcessing = false;
+      });
+    }
   }
 
   @override
@@ -36,6 +100,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
       title: 'Urdu OCR Reader',
       statusText: _status,
       statusTextColor: _statusColor,
+      cameraPreviewWidget: _cameraService.buildPreview(),
       overlayWidget: _detectedText.isNotEmpty
           ? Container(
               padding: const EdgeInsets.all(20),
@@ -109,33 +174,13 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
           : null,
       bottomWidget: Column(
         children: [
-          if (_status.contains('Initializing'))
+          if (_status.contains('Point at signboard'))
             PrimaryButton(
               label: 'Continue',
-              onPressed: () {
-                setState(() {
-                  _status = 'Detecting text\nRunning Tesseract OCR — Urdu model';
-                });
-              },
+              onPressed: _isProcessing ? null : _captureAndRecognize,
             ),
-          if (_status.contains('Detecting text'))
-            Row(
-              children: [
-                Expanded(
-                  child: PrimaryButton(
-                    label: 'Simulate text found',
-                    onPressed: _simulateTextFound,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: PrimaryButton(
-                    label: 'Simulate blur text',
-                    onPressed: _simulateBlur,
-                  ),
-                ),
-              ],
-            ),
+          if (_status.contains('Detecting text') && _isProcessing)
+            const CircularProgressIndicator(color: Colors.white),
           if (_detectedText.isNotEmpty || _status.contains('No readable text'))
             Row(
               children: [
@@ -154,7 +199,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
                     label: _detectedText.isNotEmpty ? 'Scan Again' : 'Retry',
                     onPressed: () {
                       setState(() {
-                        _status = 'Detecting text\nRunning Tesseract OCR — Urdu model';
+                        _status = 'Point at signboard - hold steady';
                         _detectedText = '';
                         _statusColor = Colors.white;
                       });
