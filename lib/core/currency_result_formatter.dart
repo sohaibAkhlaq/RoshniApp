@@ -36,18 +36,47 @@ class CurrencyResultFormatter {
 
   /// Urdu sentence spoken aloud.
   /// These are fixed, pre-written strings — not AI-generated.
-  /// Denomination is the only financially relevant information, so the
-  /// front/back distinction is not spoken (both sides identify the denomination).
+  /// Explicitly states whether the detected note is the front or back side
+  /// to provide comprehensive tactile and spatial awareness for blind users.
   static String toUrduSentence(String classLabel) {
     final cleanLabel = classLabel.trim();
+    final isBack = cleanLabel.endsWith('back') || cleanLabel.endsWith('Back');
 
-    if (cleanLabel.contains('5000')) return 'یہ پانچ ہزار روپے کا نوٹ ہے';
-    if (cleanLabel.contains('1000')) return 'یہ ایک ہزار روپے کا نوٹ ہے';
-    if (cleanLabel.contains('500'))  return 'یہ پانچ سو روپے کا نوٹ ہے';
-    if (cleanLabel.contains('100'))  return 'یہ سو روپے کا نوٹ ہے';
-    if (cleanLabel.contains('50'))   return 'یہ پچاس روپے کا نوٹ ہے';
-    if (cleanLabel.contains('20'))   return 'یہ بیس روپے کا نوٹ ہے';
-    if (cleanLabel.contains('10'))   return 'یہ دس روپے کا نوٹ ہے';
+    if (cleanLabel.contains('5000')) {
+      return isBack
+          ? 'یہ پانچ ہزار روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ پانچ ہزار روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('1000')) {
+      return isBack
+          ? 'یہ ایک ہزار روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ ایک ہزار روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('500')) {
+      return isBack
+          ? 'یہ پانچ سو روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ پانچ سو روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('100')) {
+      return isBack
+          ? 'یہ سو روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ سو روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('50')) {
+      return isBack
+          ? 'یہ پچاس روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ پچاس روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('20')) {
+      return isBack
+          ? 'یہ بیس روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ بیس روپے کے نوٹ کی اگلی طرف ہے';
+    }
+    if (cleanLabel.contains('10')) {
+      return isBack
+          ? 'یہ دس روپے کے نوٹ کی پچھلی طرف ہے'
+          : 'یہ دس روپے کے نوٹ کی اگلی طرف ہے';
+    }
 
     return 'نوٹ کی پہچان نہیں ہو سکی';
   }

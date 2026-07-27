@@ -60,6 +60,7 @@ dependencies:
   # File path utilities needed by Tesseract OCR
   path_provider: ^2.1.5
   flutter_tesseract_ocr: ^0.4.31
+  flutter_tts: ^4.2.5
 
 dev_dependencies:
   flutter_test:

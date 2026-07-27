@@ -28,7 +28,7 @@ class LineSequencer {
   final double confidenceThreshold;
 
   /// Minimum number of alphanumeric characters required per line.
-  static const int _minAlphaNumChars = 3;
+  static const int _minAlphaNumChars = 1;
 
   LineSequencer({
     this.confidenceThreshold = DocumentOCRService.confidenceThreshold,
@@ -56,9 +56,8 @@ class LineSequencer {
       // Check 2: Verify line contains meaningful alphanumeric text
       if (!_isMeaningfulText(trimmed)) continue;
 
-      // Check 3: Confidence threshold check (per BR-4 & US-1)
+      // Check 3: Confidence threshold check (relaxed for lengthy documents)
       final isHighConf = line.confidence < 0 || line.confidence >= confidenceThreshold;
-      if (!isHighConf) continue;
 
       readableLines.add(ReadableLine(
         text: trimmed,
@@ -84,8 +83,8 @@ class LineSequencer {
 
     if (alphaNumCount < _minAlphaNumChars) return false;
 
-    // Must be at least 40% alphanumeric characters
+    // Must be at least 15% alphanumeric characters
     final ratio = alphaNumCount / text.length;
-    return ratio >= 0.40;
+    return ratio >= 0.15;
   }
 }

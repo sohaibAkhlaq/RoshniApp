@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
@@ -57,6 +58,8 @@ class ObjectDetectionService {
   bool _isNchwInput = false;
   String _accelerationMode = 'CPU';
   int? _lastInferenceMs;
+  bool _isDisposed = false;
+  bool _isProcessing = false;
 
   ObjectDetectionService({
     this.confidenceThreshold = 0.5,
@@ -182,48 +185,57 @@ class ObjectDetectionService {
     CameraImage frame,
     int rotationDegrees,
   ) async {
+    if (_isDisposed) return const [];
     final interpreter = _interpreter;
-    if (interpreter == null) {
-      throw StateError(
-        'ObjectDetectionService.initialize() must be called first.',
+    if (interpreter == null) return const [];
+
+    _isProcessing = true;
+    try {
+      final source = _cameraImageToRgb(frame);
+      if (_isDisposed) return const [];
+      final oriented = rotationDegrees == 0
+          ? source
+          : img.copyRotate(source, angle: rotationDegrees);
+      final inputHeight = _isNchwInput ? _inputShape[2] : _inputShape[1];
+      final inputWidth = _isNchwInput ? _inputShape[3] : _inputShape[2];
+      final resized = img.copyResize(
+        oriented,
+        width: inputWidth,
+        height: inputHeight,
+        interpolation: img.Interpolation.linear,
       );
+
+      if (_isDisposed) return const [];
+      final input = _buildInputTensor(resized, inputWidth, inputHeight);
+      final output = _zerosForShape(_outputShape);
+      final stopwatch = Stopwatch()..start();
+      final isolateInterpreter = _isolateInterpreter;
+      if (isolateInterpreter != null) {
+        await isolateInterpreter.run(input, output);
+      } else {
+        interpreter.run(input, output);
+      }
+      stopwatch.stop();
+      if (_isDisposed) return const [];
+      _lastInferenceMs = stopwatch.elapsedMilliseconds;
+      developer.log(
+        'Inference ${_lastInferenceMs}ms ($_accelerationMode)',
+        name: 'ObjectDetectionService',
+      );
+
+      final rawOutput = _flattenNumbers(output);
+      final detections = _decodeOutput(rawOutput, inputWidth, inputHeight);
+      return _nonMaxSuppression(detections);
+    } finally {
+      _isProcessing = false;
     }
-
-    final source = _cameraImageToRgb(frame);
-    final oriented = rotationDegrees == 0
-        ? source
-        : img.copyRotate(source, angle: rotationDegrees);
-    final inputHeight = _isNchwInput ? _inputShape[2] : _inputShape[1];
-    final inputWidth = _isNchwInput ? _inputShape[3] : _inputShape[2];
-    final resized = img.copyResize(
-      oriented,
-      width: inputWidth,
-      height: inputHeight,
-      interpolation: img.Interpolation.linear,
-    );
-
-    final input = _buildInputTensor(resized, inputWidth, inputHeight);
-    final output = _zerosForShape(_outputShape);
-    final stopwatch = Stopwatch()..start();
-    final isolateInterpreter = _isolateInterpreter;
-    if (isolateInterpreter != null) {
-      await isolateInterpreter.run(input, output);
-    } else {
-      interpreter.run(input, output);
-    }
-    stopwatch.stop();
-    _lastInferenceMs = stopwatch.elapsedMilliseconds;
-    developer.log(
-      'Inference ${_lastInferenceMs}ms ($_accelerationMode)',
-      name: 'ObjectDetectionService',
-    );
-
-    final rawOutput = _flattenNumbers(output);
-    final detections = _decodeOutput(rawOutput, inputWidth, inputHeight);
-    return _nonMaxSuppression(detections);
   }
 
   Future<void> dispose() async {
+    _isDisposed = true;
+    while (_isProcessing) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
     await _isolateInterpreter?.close();
     _isolateInterpreter = null;
     _interpreter?.close();

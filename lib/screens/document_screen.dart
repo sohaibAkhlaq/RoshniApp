@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../core/camera_service.dart';
 import '../core/document_edge_detector.dart';
@@ -34,8 +37,9 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   final DocumentOCRService _ocrService = DocumentOCRService();
   final LineSequencer _lineSequencer = LineSequencer();
   final LiveQuadDetector _liveQuadDetector = LiveQuadDetector();
-  final GuidanceEngine _guidanceEngine = GuidanceEngine(requiredStableFrames: 10);
+  final GuidanceEngine _guidanceEngine = GuidanceEngine(requiredStableFrames: 4);
   final ScrollController _resultScrollController = ScrollController();
+  final FlutterTts _tts = FlutterTts();
 
   // --- State ---
   _DocumentPhase _phase = _DocumentPhase.initializing;
@@ -46,6 +50,9 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   bool _isScanning = false;
   bool _isProcessingFrame = false;
 
+  GuidanceInstruction? _lastSpokenInstruction;
+  DateTime _lastSpokenTime = DateTime.fromMillisecondsSinceEpoch(0);
+
   /// OCR result lines.
   List<ReadableLine> _readableLines = [];
   int _currentReadingLine = 0;
@@ -54,7 +61,17 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initTts();
     _initializeCamera();
+  }
+
+  Future<void> _initTts() async {
+    await _tts.setLanguage('ur-PK');
+    await _tts.setSpeechRate(0.40);
+    await _tts.setVolume(1.0);
+    await _tts.setPitch(1.0);
+    await _tts.stop();
+    await _tts.speak('دستاویز پڑھنے کا نظام کھل گیا ہے۔ فون کو کاغذ کے اوپر سیدھا پکڑیں تاکہ چاروں کونے نظر آئیں۔ سکرین پر ٹیپ کر کے بھی سکین کر سکتے ہیں');
   }
 
   @override
@@ -62,11 +79,18 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
     _isDisposed = true;
     _resultScrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    _cameraService.controller?.stopImageStream();
-    _cameraService.dispose();
+    unawaited(_tts.stop());
+    unawaited(_cleanupAndDispose());
+    super.dispose();
+  }
+
+  Future<void> _cleanupAndDispose() async {
+    try {
+      await _cameraService.controller?.stopImageStream();
+    } catch (_) {}
+    await _cameraService.dispose();
     _edgeDetector.close();
     _ocrService.dispose();
-    super.dispose();
   }
 
   Future<void> _initializeCamera() async {
@@ -96,6 +120,16 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
                 ? const Color(0xFF34D399) // Green when stable
                 : Colors.white;
           });
+
+          final now = DateTime.now();
+          if (instruction == GuidanceInstruction.stable || now.difference(_lastSpokenTime).inMilliseconds > 4000) {
+            if (instruction != _lastSpokenInstruction || now.difference(_lastSpokenTime).inMilliseconds > 5000) {
+              _lastSpokenInstruction = instruction;
+              _lastSpokenTime = now;
+              unawaited(_tts.stop());
+              unawaited(_tts.speak(_status));
+            }
+          }
 
           if (instruction == GuidanceInstruction.stable) {
             // Document is stable. Stop stream and hand off to ML Kit.
@@ -127,29 +161,29 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
 
     setState(() {
       _phase = _DocumentPhase.scanning;
-      _status = 'Opening scanner...';
+      _status = 'توجہ رکھیں، تصویر لی جا رہی ہے...';
       _statusColor = Colors.white;
     });
 
     try {
-      final result = await _edgeDetector.scanDocument();
+      HapticFeedback.mediumImpact();
+      unawaited(_tts.stop());
+      unawaited(_tts.speak('تصویر لی جا رہی ہے، فون کو اسی جگہ رکھیں'));
 
-      if (!mounted || _isDisposed) return;
-
-      if (!result.success || result.imagePaths.isEmpty) {
-        // User cancelled or scanner failed. Return to guidance phase.
-        developer.log(
-          'Scanner returned: ${result.message}',
-          name: 'DocumentScreen',
-        );
-        _returnToReady();
-        return;
+      if (_cameraService.controller != null && _cameraService.controller!.value.isStreamingImages) {
+        await _cameraService.controller!.stopImageStream();
       }
 
-      // Scanner succeeded — process the captured image through OCR
-      await _processScannedImage(result.imagePaths.first);
+      // Small delay to allow camera auto-focus to settle
+      await Future.delayed(const Duration(milliseconds: 600));
+
+      final xfile = await _cameraService.controller!.takePicture();
+      if (!mounted || _isDisposed) return;
+
+      // Process the captured image directly through OCR, bypassing ML Kit's native review screen!
+      await _processScannedImage(xfile.path);
     } catch (e) {
-      developer.log('Scanner launch error: $e', name: 'DocumentScreen');
+      developer.log('Direct camera capture error: $e', name: 'DocumentScreen');
       if (!mounted || _isDisposed) return;
       _returnToReady();
     }
@@ -181,6 +215,11 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
         _isScanning = false;
       });
 
+      HapticFeedback.lightImpact();
+      final fullText = lines.map((l) => l.text).join('. ');
+      unawaited(_tts.stop());
+      unawaited(_tts.speak(fullText));
+
       _startLineByLineReading();
     } catch (e) {
       developer.log('OCR processing error: $e', name: 'DocumentScreen');
@@ -190,12 +229,16 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   }
 
   void _showNotVisibleError() {
+    HapticFeedback.mediumImpact();
     setState(() {
       _phase = _DocumentPhase.notVisible;
       _status = 'Document not fully visible\n\nPlease include all 4 corners of the page';
       _statusColor = const Color(0xFFEF4444);
       _isScanning = false;
     });
+
+    unawaited(_tts.stop());
+    unawaited(_tts.speak('دستاویز مکمل نظر نہیں آ رہی، فون کو تھوڑا پیچھے کریں اور دوبارہ کوشش کریں'));
   }
 
   void _startLineByLineReading() {
@@ -218,7 +261,9 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
         );
       }
 
-      await Future.delayed(const Duration(seconds: 2));
+      final wordCount = _readableLines[index].text.split(' ').length;
+      final delayMillis = math.max(2500, wordCount * 380);
+      await Future.delayed(Duration(milliseconds: delayMillis));
 
       if (!mounted || _isDisposed || _phase != _DocumentPhase.result) return;
       await readNext(index + 1);
@@ -228,6 +273,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   }
 
   void _returnToReady() {
+    HapticFeedback.lightImpact();
     setState(() {
       _phase = _DocumentPhase.guidance;
       _status = 'Looking for document';
@@ -236,7 +282,11 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
       _currentReadingLine = 0;
       _isScanning = false;
       _isProcessingFrame = false;
+      _lastSpokenInstruction = null;
     });
+
+    unawaited(_tts.stop());
+    unawaited(_tts.speak('دستاویز تلاش کی جا رہی ہے'));
     
     // Restart image stream
     if (_cameraService.controller != null && !_cameraService.controller!.value.isStreamingImages) {
@@ -256,6 +306,16 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
                 ? const Color(0xFF34D399) // Green when stable
                 : Colors.white;
           });
+
+          final now = DateTime.now();
+          if (instruction == GuidanceInstruction.stable || now.difference(_lastSpokenTime).inMilliseconds > 4000) {
+            if (instruction != _lastSpokenInstruction || now.difference(_lastSpokenTime).inMilliseconds > 5000) {
+              _lastSpokenInstruction = instruction;
+              _lastSpokenTime = now;
+              unawaited(_tts.stop());
+              unawaited(_tts.speak(_status));
+            }
+          }
 
           if (instruction == GuidanceInstruction.stable) {
             await _cameraService.controller!.stopImageStream();
@@ -277,15 +337,48 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return CameraBaseScreen(
-      title: 'Document Reader',
-      statusText: _status,
-      statusTextColor: _statusColor,
-      cameraPreviewWidget: _buildViewfinderContent(),
-      overlayWidget: _phase == _DocumentPhase.result && _readableLines.isNotEmpty
-          ? _buildResultOverlay(theme)
-          : null,
-      bottomWidget: _buildBottomWidget(),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        if (_phase == _DocumentPhase.guidance) {
+          if (_cameraService.controller != null && _cameraService.controller!.value.isStreamingImages) {
+            unawaited(_cameraService.controller!.stopImageStream());
+          }
+          _launchScanner();
+        } else if (_phase == _DocumentPhase.result && _readableLines.isNotEmpty) {
+          final fullText = _readableLines.map((l) => l.text).join('. ');
+          unawaited(_tts.stop());
+          unawaited(_tts.speak(fullText));
+        } else if (_phase == _DocumentPhase.notVisible || _phase == _DocumentPhase.error) {
+          _returnToReady();
+        }
+      },
+      onDoubleTap: () {
+        if (_phase == _DocumentPhase.result || _phase == _DocumentPhase.notVisible || _phase == _DocumentPhase.error) {
+          _returnToReady();
+        }
+      },
+      onHorizontalDragEnd: (details) {
+        if ((details.primaryVelocity ?? 0) > 200 || (details.primaryVelocity ?? 0) < -200) {
+          HapticFeedback.mediumImpact();
+          unawaited(_tts.stop());
+          unawaited(_tts.speak('واپس جا رہے ہیں'));
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: CameraBaseScreen(
+        title: 'Document Reader',
+        statusText: _status,
+        statusTextColor: _statusColor,
+        cameraPreviewWidget: _buildViewfinderContent(),
+        overlayWidget: _phase == _DocumentPhase.result && _readableLines.isNotEmpty
+            ? _buildResultOverlay(theme)
+            : null,
+        bottomWidget: _buildBottomWidget(),
+      ),
     );
   }
 

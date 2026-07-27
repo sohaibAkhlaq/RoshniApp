@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../core/camera_service.dart';
 import '../core/detection_result_formatter.dart';
@@ -23,6 +25,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
       ObjectDetectionService();
   final DetectionResultFormatter _resultFormatter =
       const DetectionResultFormatter();
+  final FlutterTts _tts = FlutterTts();
 
   static const int _persistenceFrames = 2;
   static const int _maxMissedFrames = 4;
@@ -46,7 +49,17 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initTts();
     unawaited(_initializeLiveDetection());
+  }
+
+  Future<void> _initTts() async {
+    await _tts.setLanguage('ur-PK');
+    await _tts.setSpeechRate(0.45);
+    await _tts.setVolume(1.0);
+    if (mounted && !_isDisposed) {
+      _tts.speak("آس پاس کی چیزیں پہچاننے کا نظام کھل گیا ہے۔ فون کو سامنے پکڑیں");
+    }
   }
 
   @override
@@ -63,9 +76,16 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
   void dispose() {
     _isDisposed = true;
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_releaseCamera());
-    unawaited(_objectDetectionService.dispose());
+    unawaited(_cleanupAndDispose());
     super.dispose();
+  }
+
+  Future<void> _cleanupAndDispose() async {
+    _tts.stop();
+    _cameraReady = false;
+    await _stopImageStream();
+    await _cameraService.dispose();
+    await _objectDetectionService.dispose();
   }
 
   Future<void> _initializeLiveDetection() async {
@@ -169,10 +189,16 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
 
     _lastAnnouncedSignature = signature;
     _lastAnnouncedAt = now;
-    final sentence = _resultFormatter.format(detections);
+    final sentence = _resultFormatter.formatUrdu(detections);
     setState(() {
       _status = sentence;
     });
+
+    if (detections.isNotEmpty) {
+      HapticFeedback.lightImpact();
+    }
+    _tts.stop();
+    _tts.speak(sentence);
   }
 
   String _dominantSignature(List<ObjectDetection> detections) {
@@ -331,6 +357,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
     _cameraReady = false;
     await _stopImageStream();
     await _cameraService.dispose();
+    await _objectDetectionService.dispose();
     if (!_isDisposed && mounted) {
       setState(() {
         _liveDetections = const [];
@@ -348,24 +375,47 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
     await controller.stopImageStream();
   }
 
+  void _repeatLastAnnouncement() {
+    HapticFeedback.selectionClick();
+    _tts.stop();
+    _tts.speak(_status);
+  }
+
+  void _onSwipeBack() {
+    HapticFeedback.mediumImpact();
+    _tts.stop();
+    _tts.speak("واپس جا رہے ہیں");
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CameraBaseScreen(
-      title: 'Object Detection',
-      statusText: _status,
-      statusTextColor: Colors.white,
-      cameraPreviewWidget: _cameraReady
-          ? _cameraService.buildPreview()
-          : _buildPlaceholder(),
-      overlayWidget: _cameraReady
-          ? Positioned.fill(
-              child: CustomPaint(
-                painter: _DetectionBoxPainter(_liveDetections),
-                size: Size.infinite,
-              ),
-            )
-          : null,
-      bottomWidget: null,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _repeatLastAnnouncement,
+      onDoubleTap: _repeatLastAnnouncement,
+      onHorizontalDragEnd: (details) {
+        if ((details.primaryVelocity ?? 0) > 250) {
+          _onSwipeBack();
+        }
+      },
+      child: CameraBaseScreen(
+        title: 'Object Detection',
+        statusText: _status,
+        statusTextColor: Colors.white,
+        cameraPreviewWidget: _cameraReady
+            ? _cameraService.buildPreview()
+            : _buildPlaceholder(),
+        overlayWidget: _cameraReady
+            ? Positioned.fill(
+                child: CustomPaint(
+                  painter: _DetectionBoxPainter(_liveDetections),
+                  size: Size.infinite,
+                ),
+              )
+            : null,
+        bottomWidget: null,
+      ),
     );
   }
 

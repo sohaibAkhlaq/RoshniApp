@@ -44,10 +44,11 @@ class DocumentEdgeDetector {
   /// or a failure result if the user cancelled or an error occurred.
   Future<DocumentScanResult> scanDocument() async {
     try {
-      // Configure the scanner for single-page document capture
+      // Configure the scanner for single-page document capture in base mode
+      // to bypass manual filter/enhance editing screens that trap blind users.
       final options = DocumentScannerOptions(
         documentFormats: const {DocumentFormat.jpeg},
-        mode: ScannerMode.full, // Full editing capabilities
+        mode: ScannerMode.base, // Base mode without manual editing/filter UI
         pageLimit: 1, // Single page per scan (matches prototype)
         isGalleryImport: false, // Camera-only, no gallery import
       );

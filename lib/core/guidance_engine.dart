@@ -19,20 +19,26 @@ class GuidanceEngine {
   final int requiredStableFrames;
   
   int _stableCounter = 0;
+  int _missedFrames = 0;
   GuidanceInstruction _lastInstruction = GuidanceInstruction.searching;
 
-  GuidanceEngine({this.requiredStableFrames = 10});
+  GuidanceEngine({this.requiredStableFrames = 4});
 
   /// Evaluates the quad and returns the appropriate guidance instruction.
   GuidanceInstruction evaluate(NormalizedQuad? quad) {
     if (quad == null) {
-      _stableCounter = 0;
-      return _updateInstruction(GuidanceInstruction.searching);
+      _missedFrames++;
+      if (_missedFrames > 2) {
+        _stableCounter = 0;
+      }
+      return _updateInstruction(_lastInstruction == GuidanceInstruction.holdSteady ? GuidanceInstruction.holdSteady : GuidanceInstruction.searching);
     }
 
+    _missedFrames = 0;
+
     // 1. Check if the document is clipped (corners too close to the image edges)
-    // Using a 5% margin
-    const double edgeMargin = 0.05;
+    // Using a relaxed 1.5% margin for blind hand-holding
+    const double edgeMargin = 0.015;
     final isClipped = quad.topLeftX < edgeMargin || quad.topLeftY < edgeMargin ||
         quad.topRightX > (1.0 - edgeMargin) || quad.topRightY < edgeMargin ||
         quad.bottomRightX > (1.0 - edgeMargin) || quad.bottomRightY > (1.0 - edgeMargin) ||
@@ -44,23 +50,21 @@ class GuidanceEngine {
     }
 
     // 2. Check if the document is too small
-    // Area of normalized quad is between 0.0 and 1.0. We want it to fill a good portion of the screen.
-    if (quad.area < 0.25) {
+    // Area of normalized quad is between 0.0 and 1.0. Relaxed to 15% for blind accessibility.
+    if (quad.area < 0.15) {
       _stableCounter = 0;
       return _updateInstruction(GuidanceInstruction.moveCloser);
     }
 
     // 3. Check centering
-    // Centroid should be near 0.5, 0.5
+    // Centroid should be near 0.5, 0.5. Relaxed 25% tolerance for one-handed blind usage.
     final cx = quad.centerX;
     final cy = quad.centerY;
-    const centerTolerance = 0.15; // 15% tolerance from center
+    const centerTolerance = 0.25;
 
     if (cx < (0.5 - centerTolerance)) {
       _stableCounter = 0;
-      // In raw buffer, depending on rotation, X and Y might map to screen differently.
-      // But assuming standard mapping:
-      return _updateInstruction(GuidanceInstruction.moveRight); // Document is too far left, move camera right
+      return _updateInstruction(GuidanceInstruction.moveRight);
     }
     if (cx > (0.5 + centerTolerance)) {
       _stableCounter = 0;
@@ -76,15 +80,14 @@ class GuidanceEngine {
     }
 
     // 4. Check for severe skew/rotation
-    // If the top edge width is drastically different from bottom edge width
+    // Relaxed skew check to 45% difference
     final topWidth = (quad.topRightX - quad.topLeftX).abs();
     final bottomWidth = (quad.bottomRightX - quad.bottomLeftX).abs();
     final leftHeight = (quad.bottomLeftY - quad.topLeftY).abs();
     final rightHeight = (quad.bottomRightY - quad.topRightY).abs();
 
-    // If one side is more than 30% larger than the opposite side, it's skewed
-    if ((topWidth - bottomWidth).abs() / topWidth > 0.3 || 
-        (leftHeight - rightHeight).abs() / leftHeight > 0.3) {
+    if ((topWidth - bottomWidth).abs() / topWidth > 0.45 || 
+        (leftHeight - rightHeight).abs() / leftHeight > 0.45) {
       _stableCounter = 0;
       return _updateInstruction(GuidanceInstruction.straighten);
     }
@@ -104,29 +107,31 @@ class GuidanceEngine {
     return newInstruction;
   }
 
-  /// Helper to get a user-friendly spoken message for an instruction.
+  /// Helper to get a user-friendly spoken message for an instruction in Urdu.
+  /// These conversational prompts provide real-time audio guidance to blind users
+  /// on how to frame all 4 corners of the document.
   String getSpokenMessage(GuidanceInstruction instruction) {
     switch (instruction) {
       case GuidanceInstruction.searching:
-        return "Looking for document";
+        return "دستاویز تلاش کی جا رہی ہے";
       case GuidanceInstruction.moveBack:
-        return "Move camera back";
+        return "فون کو تھوڑا پیچھے کریں، تاکہ چاروں کونے نظر آئیں";
       case GuidanceInstruction.moveCloser:
-        return "Move closer";
+        return "فون کو دستاویز کے تھوڑا قریب کریں";
       case GuidanceInstruction.moveLeft:
-        return "Move left";
+        return "فون کو بائیں طرف کریں";
       case GuidanceInstruction.moveRight:
-        return "Move right";
+        return "فون کو دائیں طرف کریں";
       case GuidanceInstruction.moveUp:
-        return "Move up";
+        return "فون کو تھوڑا اوپر کریں";
       case GuidanceInstruction.moveDown:
-        return "Move down";
+        return "فون کو تھوڑا نیچے کریں";
       case GuidanceInstruction.straighten:
-        return "Straighten the camera";
+        return "فون کو دستاویز کے اوپر سیدھا کریں";
       case GuidanceInstruction.holdSteady:
-        return "Positioned correctly, hold steady";
+        return "بالکل ٹھیک، فون کو اسی جگہ سیدھا پکڑے رکھیں";
       case GuidanceInstruction.stable:
-        return "Stable, launching scanner";
+        return "چاروں کونے مل گئے ہیں، تصویر لی جا رہی ہے";
     }
   }
 }

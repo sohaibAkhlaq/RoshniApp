@@ -5,6 +5,7 @@ class FeatureCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool isSelected;
 
   const FeatureCard({
     super.key,
@@ -12,6 +13,7 @@ class FeatureCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.isSelected = false,
   });
 
   @override
@@ -23,13 +25,18 @@ class FeatureCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isSelected ? const Color(0xFFFFFBEB) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFD97706) : const Color(0xFFE5E7EB),
+            width: isSelected ? 3.0 : 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(10),
-              blurRadius: 12,
+              color: isSelected
+                  ? const Color(0xFFD97706).withAlpha(51)
+                  : Colors.black.withAlpha(10),
+              blurRadius: isSelected ? 16 : 12,
               offset: const Offset(0, 4),
             ),
           ],

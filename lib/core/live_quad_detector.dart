@@ -111,30 +111,54 @@ class LiveQuadDetector {
       // Sort remaining contours by area, largest first
       validContours.sort((a, b) => b.$1.compareTo(a.$1));
 
-      cv.VecPoint? bestQuad;
-      // STEP 7 - Convex hull + polygon approximation
+      List<cv.Point>? bestQuadPoints;
+      // STEP 7 - Convex hull + multi-epsilon polygon approximation with extreme corners fallback
       for (final item in validContours) {
         final contour = item.$2;
         final hullMat = cv.convexHull(contour);
         final hullPoints = cv.VecPoint.fromMat(hullMat);
         final perimeter = cv.arcLength(hullPoints, true);
-        final approx = cv.approxPolyDP(hullPoints, 0.02 * perimeter, true);
 
-        if (approx.length == 4) {
-          // STEP 8 - Aspect ratio sanity check
-          // Check that the quad is not extremely thin.
-          final rect = cv.boundingRect(approx);
-          final aspectRatio = rect.width / rect.height;
-          if (aspectRatio > 0.2 && aspectRatio < 5.0) {
-            bestQuad = approx;
-            break;
+        // Try multiple epsilon tolerances to find a 4-point approximation
+        for (double eps = 0.015; eps <= 0.05; eps += 0.005) {
+          final approx = cv.approxPolyDP(hullPoints, eps * perimeter, true);
+          if (approx.length == 4) {
+            final rect = cv.boundingRect(approx);
+            final aspectRatio = rect.width / rect.height;
+            if (aspectRatio > 0.2 && aspectRatio < 5.0) {
+              bestQuadPoints = approx.toList();
+              break;
+            }
           }
         }
+
+        // If exact 4-point approximation failed, fallback to 4 extreme corners of the largest contour
+        if (bestQuadPoints == null && hullPoints.length >= 4) {
+          final pts = hullPoints.toList();
+          pts.sort((a, b) => (a.x + a.y).compareTo(b.x + b.y));
+          final tl = pts.first;
+          final br = pts.last;
+
+          pts.sort((a, b) => (a.x - a.y).compareTo(b.x - b.y));
+          final bl = pts.first;
+          final tr = pts.last;
+
+          final w = (tr.x - tl.x).abs();
+          final h = (bl.y - tl.y).abs();
+          if (w > 0 && h > 0) {
+            final aspectRatio = w / h;
+            if (aspectRatio > 0.2 && aspectRatio < 5.0) {
+              bestQuadPoints = [tl, tr, br, bl];
+            }
+          }
+        }
+
+        if (bestQuadPoints != null) break;
       }
 
-      if (bestQuad != null) {
-        // STEP 9 - Corner ordering
-        final points = bestQuad.toList();
+      if (bestQuadPoints != null) {
+        // STEP 8 - Corner ordering
+        final points = bestQuadPoints;
         
         points.sort((a, b) => (a.x + a.y).compareTo(b.x + b.y));
         final topLeft = points[0];
@@ -145,7 +169,7 @@ class LiveQuadDetector {
         final bottomLeft = remaining[0];
         final topRight = remaining[1];
 
-        // STEP 10 - Scale corners back to full resolution
+        // STEP 9 - Scale corners back to full resolution
         // Since we are outputting a NormalizedQuad (0.0 to 1.0 coordinates), 
         // the scale ratio mathematically cancels out when we divide by target width/height!
         // X_target / targetWidth == X_orig / origWidth

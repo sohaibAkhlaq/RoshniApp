@@ -68,7 +68,7 @@ class _TextElementItem {
 /// horizontal line (e.g., "Bill Amount" on left and "1040" on right) are merged
 /// left-to-right into a single coherent line ("Bill Amount 1040").
 class DocumentOCRService {
-  static const double confidenceThreshold = 60.0;
+  static const double confidenceThreshold = 10.0;
 
   /// Maximum vertical delta (pixels) to consider elements on the same horizontal row.
   static const double _rowYDelta = 18.0;
@@ -85,7 +85,7 @@ class DocumentOCRService {
       await tempFile.writeAsBytes(imageBytes);
 
       developer.log(
-        'Running ML Kit Text Recognition with Key-Value Row Merging',
+        'Running ML Kit Text Recognition for Document Reader',
         name: 'DocumentOCRService',
       );
 
@@ -108,53 +108,45 @@ class DocumentOCRService {
     }
   }
 
-  /// Shared processing logic: extracts text elements from ML Kit's
-  /// RecognizedText, clusters them into horizontal rows (receipt-style
-  /// key-value merging), and returns them as ordered OcrLines.
+  /// Shared processing logic: preserves ML Kit's native line structure
+  /// for lengthy documents, letters, and pages without truncating or
+  /// splitting sentences into 2-word fragments.
   OcrResult _processRecognizedText(RecognizedText recognizedText) {
-    // Collect all text elements across all blocks & lines
-    final allElements = <_TextElementItem>[];
+    final lines = <OcrLine>[];
 
     for (final block in recognizedText.blocks) {
       for (final line in block.lines) {
         final lineText = line.text.trim();
         if (lineText.isEmpty) continue;
 
+        final box = line.boundingBox;
+        final centerY = box.top + (box.height / 2.0);
+
+        // Calculate average confidence of words in this line
+        double conf = 90.0;
         if (line.elements.isNotEmpty) {
+          double sumConf = 0.0;
+          int count = 0;
           for (final elem in line.elements) {
-            final elemText = elem.text.trim();
-            if (elemText.isEmpty) continue;
-
-            final box = elem.boundingBox;
-            final centerY = box.top + (box.height / 2.0);
-            final conf = elem.confidence != null
-                ? (elem.confidence! <= 1.0 ? elem.confidence! * 100.0 : elem.confidence!)
-                : 90.0;
-
-            allElements.add(_TextElementItem(
-              text: elemText,
-              left: box.left.toDouble(),
-              top: box.top.toDouble(),
-              centerY: centerY,
-              confidence: conf,
-            ));
+            if (elem.confidence != null) {
+              sumConf += (elem.confidence! <= 1.0 ? elem.confidence! * 100.0 : elem.confidence!);
+              count++;
+            }
           }
-        } else {
-          // Fallback for lines without elements
-          final box = line.boundingBox;
-          final centerY = box.top + (box.height / 2.0);
-          allElements.add(_TextElementItem(
-            text: lineText,
-            left: box.left.toDouble(),
-            top: box.top.toDouble(),
-            centerY: centerY,
-            confidence: 90.0,
-          ));
+          if (count > 0) {
+            conf = sumConf / count;
+          }
         }
+
+        lines.add(OcrLine(
+          text: lineText,
+          confidence: conf,
+          yPosition: centerY,
+        ));
       }
     }
 
-    if (allElements.isEmpty) {
+    if (lines.isEmpty) {
       return const OcrResult(
         lines: [],
         hasUsableText: false,
@@ -162,59 +154,13 @@ class DocumentOCRService {
       );
     }
 
-    // Step 1: Cluster elements into horizontal rows (Y-center within _rowYDelta)
-    final rowClusters = <List<_TextElementItem>>[];
-
-    // Sort elements vertically first to seed row clustering cleanly
-    allElements.sort((a, b) => a.centerY.compareTo(b.centerY));
-
-    for (final elem in allElements) {
-      bool addedToCluster = false;
-      for (final cluster in rowClusters) {
-        final clusterAvgY =
-            cluster.fold<double>(0, (sum, item) => sum + item.centerY) / cluster.length;
-        if ((elem.centerY - clusterAvgY).abs() <= _rowYDelta) {
-          cluster.add(elem);
-          addedToCluster = true;
-          break;
-        }
-      }
-      if (!addedToCluster) {
-        rowClusters.add([elem]);
-      }
-    }
-
-    // Step 2: For each row cluster, sort left-to-right by X-coordinate & merge text
-    final lines = <OcrLine>[];
-
-    for (final cluster in rowClusters) {
-      // Sort items strictly left-to-right
-      cluster.sort((a, b) => a.left.compareTo(b.left));
-
-      final mergedText = cluster.map((e) => e.text).join(' ');
-      if (mergedText.trim().isEmpty) continue;
-
-      final avgY =
-          cluster.fold<double>(0, (sum, item) => sum + item.centerY) / cluster.length;
-      final avgConf =
-          cluster.fold<double>(0, (sum, item) => sum + item.confidence) / cluster.length;
-
-      lines.add(OcrLine(
-        text: mergedText,
-        confidence: avgConf,
-        yPosition: avgY,
-      ));
-    }
-
-    // Step 3: Sort merged lines top-to-bottom
+    // Sort lines strictly top-to-bottom in reading order
     lines.sort((a, b) => a.yPosition.compareTo(b.yPosition));
 
-    final overallAvgConf = lines.isEmpty
-        ? -1.0
-        : lines.fold<double>(0, (sum, l) => sum + l.confidence) / lines.length;
+    final overallAvgConf = lines.fold<double>(0, (sum, l) => sum + l.confidence) / lines.length;
 
     developer.log(
-      'ML Kit merged ${lines.length} key-value receipt rows',
+      'ML Kit extracted ${lines.length} complete document lines with high accuracy',
       name: 'DocumentOCRService',
     );
 

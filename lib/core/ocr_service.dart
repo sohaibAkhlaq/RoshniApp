@@ -84,10 +84,19 @@ class OcrService {
       print("OCR SERVICE: Online! Calling Cloud Urdu OCR Service for high-accuracy Nastaliq recognition...");
       final endpoint = Uri.parse('https://api.groq.com/openai/v1/chat/completions');
       final base64Image = base64Encode(imageBytes);
-      const prompt = "You are an expert Urdu OCR engine (like UTRNet). Carefully read and extract all Urdu Nastaliq / Naskh text visible in this image (such as signboards, labels, or documents). Output ONLY the exact transcribed Urdu text in Urdu script. Do not output any translation, English text, commentary, or <think> tags. Just the clean Urdu words.";
+      const prompt =
+          "You are an expert Pakistani Urdu linguistic OCR engine. Your task is to accurately read and transcribe all Urdu text visible in this image (from books, documents, signboards, or notes) for a blind user.\n\n"
+          "CRITICAL INSTRUCTIONS FOR 100% ACCURACY:\n"
+          "1. Transcribe the Urdu text in clean Urdu script (Nastaliq/Naskh).\n"
+          "2. Word & Sentence Cohesion: In Urdu Nastaliq script, dots (نقاط) and curves can appear stylized or faint in camera photos. Use Pakistani Urdu grammatical and linguistic context to correctly recognize words so that the sentences are meaningful, coherent, and grammatically accurate exactly as written in the text. Never leave out words or fragment sentences due to minor image noise.\n"
+          "3. Factual Fidelity (Zero Hallucination): Do NOT invent, summarize, or add any sentences/paragraphs that are not written in the image. Transcribe faithfully only what is written.\n"
+          "4. Output ONLY the Urdu transcription in Urdu script. Do NOT include any English words, translations, explanations, markdown formatting, or <think> tags.\n"
+          "5. If there is absolutely no readable text in the image, output exactly: NO_TEXT_FOUND";
 
       final body = jsonEncode({
         'model': 'qwen/qwen3.6-27b',
+        'temperature': 0.0,
+        'max_tokens': 1024,
         'messages': [
           {
             'role': 'user',
@@ -126,7 +135,11 @@ class OcrService {
               if (message.containsKey('content')) {
                 var text = message['content'] as String;
                 text = text.replaceAll(RegExp(r'<think>[\s\S]*?</think>'), '').trim();
-                if (text.isNotEmpty && text.length >= 2 && !text.toLowerCase().contains("no text")) {
+                text = text.replaceAll(RegExp(r'```[a-zA-Z]*\n?'), '').replaceAll('```', '').trim();
+                if (text.isNotEmpty &&
+                    text.length >= 2 &&
+                    !text.toLowerCase().contains("no_text_found") &&
+                    !text.toLowerCase().contains("no text")) {
                   print("OCR SERVICE: Cloud OCR Success! Extracted: [$text]");
                   return text;
                 }
@@ -155,9 +168,32 @@ class OcrService {
         return const OcrResult(success: false, text: '', errorMessage: 'Image is empty.');
       }
 
-      // 2. STEP 1 — HYBRID CLOUD OCR ATTEMPT (If Online)
+      // 2. Preprocess image for Cloud OCR (Bake EXIF orientation so Nastaliq is upright & resize if too large)
+      Uint8List cloudImageBytes = imageBytes;
+      try {
+        var decodedImg = img.decodeImage(imageBytes);
+        if (decodedImg != null) {
+          decodedImg = img.bakeOrientation(decodedImg);
+          final maxDim = max(decodedImg.width, decodedImg.height);
+          if (maxDim > 1600) {
+            final scale = 1600 / maxDim;
+            decodedImg = img.copyResize(
+              decodedImg,
+              width: (decodedImg.width * scale).round(),
+              height: (decodedImg.height * scale).round(),
+              interpolation: img.Interpolation.linear,
+            );
+          }
+          cloudImageBytes = Uint8List.fromList(img.encodeJpg(decodedImg, quality: 88));
+          print("OCR SERVICE: Baked orientation and prepared Cloud OCR image: ${decodedImg.width}x${decodedImg.height}");
+        }
+      } catch (e) {
+        print("OCR SERVICE: Could not preprocess image for cloud ($e), sending raw bytes.");
+      }
+
+      // STEP 1 — HYBRID CLOUD OCR ATTEMPT (If Online)
       // Gives human-level accuracy on complex Nastaliq signage without phone CPU/memory strain.
-      final cloudText = await _tryCloudOcr(imageBytes);
+      final cloudText = await _tryCloudOcr(cloudImageBytes);
       if (cloudText != null && cloudText.isNotEmpty) {
         print("OCR SERVICE: Returning high-accuracy Cloud OCR result!");
         return OcrResult(

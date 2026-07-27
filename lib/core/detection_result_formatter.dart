@@ -1,4 +1,5 @@
 import 'object_detection_service.dart';
+import 'coco_urdu_labels.dart';
 
 class DetectionResultFormatter {
   const DetectionResultFormatter();
@@ -28,11 +29,45 @@ class DetectionResultFormatter {
     return '${_joinNaturally(summarized)} detected ahead';
   }
 
+  String formatUrdu(List<ObjectDetection> detections) {
+    if (detections.isEmpty) {
+      return 'ابھی سامنے کوئی واضح چیز نہیں ہے';
+    }
+
+    final grouped = <String, _DetectionGroup>{};
+    for (final detection in detections) {
+      final urduLabel = CocoUrduLabels.translate(detection.label);
+      final group = grouped.putIfAbsent(
+        urduLabel,
+        () => _DetectionGroup(label: urduLabel),
+      );
+      group
+        ..count += 1
+        ..bestConfidence = detection.confidence > group.bestConfidence
+            ? detection.confidence
+            : group.bestConfidence;
+    }
+
+    final topGroups = grouped.values.toList()
+      ..sort((a, b) => b.bestConfidence.compareTo(a.bestConfidence));
+    final summarized = topGroups.take(3).map(_formatUrduGroup).toList();
+
+    final totalCount = topGroups.take(3).fold<int>(0, (sum, g) => sum + g.count);
+    final ending = totalCount == 1 ? 'ہے' : 'ہیں';
+
+    return 'سامنے ${_joinUrduNaturally(summarized)} $ending';
+  }
+
   String _formatGroup(_DetectionGroup group) {
     if (group.count == 1) {
       return _articleFor(group.label);
     }
     return '${_numberWord(group.count)} ${_pluralize(group.label)}';
+  }
+
+  String _formatUrduGroup(_DetectionGroup group) {
+    final numWord = _urduNumberWord(group.count);
+    return '$numWord ${group.label}';
   }
 
   String _articleFor(String label) {
@@ -57,6 +92,22 @@ class DetectionResultFormatter {
     return words[count] ?? count.toString();
   }
 
+  String _urduNumberWord(int count) {
+    const words = {
+      1: 'ایک',
+      2: 'دو',
+      3: 'تین',
+      4: 'چار',
+      5: 'پانچ',
+      6: 'چھ',
+      7: 'سات',
+      8: 'آٹھ',
+      9: 'نو',
+      10: 'دس',
+    };
+    return words[count] ?? count.toString();
+  }
+
   String _pluralize(String label) {
     if (label.endsWith('s')) return label;
     if (label.endsWith('person')) return 'people';
@@ -70,6 +121,13 @@ class DetectionResultFormatter {
     if (items.length == 1) return items.first;
     if (items.length == 2) return '${items[0]} and ${items[1]}';
     return '${items[0]}, ${items[1]}, and ${items[2]}';
+  }
+
+  String _joinUrduNaturally(List<String> items) {
+    if (items.isEmpty) return '';
+    if (items.length == 1) return items.first;
+    if (items.length == 2) return '${items[0]} اور ${items[1]}';
+    return '${items[0]}، ${items[1]} اور ${items[2]}';
   }
 }
 

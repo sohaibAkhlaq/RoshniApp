@@ -41,6 +41,8 @@ class CurrencyClassifierService {
   int _inputHeight = 224;
   int _inputWidth = 224;
   bool _isLoaded = false;
+  bool _isDisposed = false;
+  bool _isProcessing = false;
 
   bool get isLoaded => _isLoaded;
 
@@ -117,156 +119,154 @@ class CurrencyClassifierService {
   /// below-threshold result — never throws for that case; the calling screen
   /// handles it as the error/retry state.
   Future<CurrencyClassificationResult> classify(Uint8List imageBytes) async {
-    if (!_isLoaded || _interpreter == null) {
-      throw StateError(
-        'CurrencyClassifierService.loadModel() must be called before classify()',
-      );
-    }
-
-    // ── 1. Decode & fix camera orientation ──────────────────────────────────
-    final decodedImage = img.decodeImage(imageBytes);
-    if (decodedImage == null) {
-      throw ArgumentError('Could not decode image bytes');
-    }
-
-    // Correct Android sensor landscape rotation (EXIF orientation bake)
-    final orientedImage = img.bakeOrientation(decodedImage);
-
-    // ── 2. Center square crop to preserve aspect ratio ──────────────────────
-    // Rectangular camera frames (e.g. 1920x1080) squish non-uniformly if resized
-    // directly to 224x224. Cropping the central square matches how notes are held.
-    final minDim = orientedImage.width < orientedImage.height
-        ? orientedImage.width
-        : orientedImage.height;
-    final cropX = (orientedImage.width - minDim) ~/ 2;
-    final cropY = (orientedImage.height - minDim) ~/ 2;
-
-    final croppedImage = img.copyCrop(
-      orientedImage,
-      x: cropX,
-      y: cropY,
-      width: minDim,
-      height: minDim,
-    );
-
-    // ── 3. Resize to 224x224 input tensor size ─────────────────────────────
-    developer.log(
-      'Raw capture: ${decodedImage.width}x${decodedImage.height} px | '
-      'Oriented: ${orientedImage.width}x${orientedImage.height} px | '
-      'Cropped square: ${minDim}x$minDim px -> Resizing to ${_inputWidth}x$_inputHeight',
-      name: 'CurrencyClassifierService',
-    );
-
-    final resized = img.copyResize(
-      croppedImage,
-      width: _inputWidth,
-      height: _inputHeight,
-      interpolation: img.Interpolation.linear,
-    );
-
-    // Store encoded JPEG bytes of the exact image sent to the model for Step 1 debug overlay
-    _lastPreprocessedDebugBytes = Uint8List.fromList(img.encodeJpg(resized, quality: 90));
-
-    // Fast 1ms lens-covered check on 224x224 image (avoids processing pitch black frames)
-    double sumLuma = 0.0;
-    for (int y = 0; y < _inputHeight; y += 4) {
-      for (int x = 0; x < _inputWidth; x += 4) {
-        final p = resized.getPixel(x, y);
-        sumLuma += (0.299 * p.r + 0.587 * p.g + 0.114 * p.b);
-      }
-    }
-    final avgLuma = sumLuma / (56 * 56);
-    if (avgLuma < 8.0) {
-      developer.log('Lens appears covered or frame is pitch black (avgLuma=${avgLuma.toStringAsFixed(1)})', name: 'CurrencyClassifierService');
+    if (_isDisposed || !_isLoaded || _interpreter == null) {
       return const CurrencyClassificationResult(
         isConfident: false,
-        classLabel: 'Lens Covered / Pitch Black',
+        classLabel: 'Unknown',
         confidence: 0.0,
       );
     }
 
-
-    // ── 4. Apply PyTorch ImageNet Normalization ──────────────────────────────
-    // The model is a fast.ai PyTorch ResNet34, which strictly expects
-    // RGB inputs scaled to [0,1], normalized with ImageNet mean and std.
-
-    final numClasses = _labels.isEmpty ? 6 : _labels.length;
-    final inputBuffer = Float32List(_inputHeight * _inputWidth * 3);
-    
-    int idx = 0;
-    for (int y = 0; y < _inputHeight; y++) {
-      for (int x = 0; x < _inputWidth; x++) {
-        final pixel = resized.getPixel(x, y);
-        
-        // PyTorch ImageNet Normalization
-        inputBuffer[idx++] = ((pixel.r.toDouble() / 255.0) - 0.485) / 0.229;
-        inputBuffer[idx++] = ((pixel.g.toDouble() / 255.0) - 0.456) / 0.224;
-        inputBuffer[idx++] = ((pixel.b.toDouble() / 255.0) - 0.406) / 0.225;
+    _isProcessing = true;
+    try {
+      // ── 1. Decode & fix camera orientation ──────────────────────────────────
+      final decodedImage = img.decodeImage(imageBytes);
+      if (decodedImage == null) {
+        throw ArgumentError('Could not decode image bytes');
       }
-    }
 
-    final stopwatch = Stopwatch()..start();
-    final input = inputBuffer.reshape([1, _inputHeight, _inputWidth, 3]);
-    final output = List.generate(1, (_) => List.filled(numClasses, 0.0));
-    
-    _interpreter!.run(input, output);
-
-    final rawScores = output[0];
-    final probs = _computeSoftmax(rawScores);
-
-    int bestTopIndex = 0;
-    double bestTopScore = probs[0];
-    for (int i = 1; i < probs.length; i++) {
-      if (probs[i] > bestTopScore) {
-        bestTopScore = probs[i];
-        bestTopIndex = i;
+      if (_isDisposed) {
+        return const CurrencyClassificationResult(
+          isConfident: false,
+          classLabel: 'Unknown',
+          confidence: 0.0,
+        );
       }
-    }
-    final bestScores = probs;
-    final bestModeName = 'PyTorch ImageNet';
 
-    stopwatch.stop();
+      // Correct Android sensor landscape rotation (EXIF orientation bake)
+      final orientedImage = img.bakeOrientation(decodedImage);
 
-    // ── 5. Log inference results ─────────────────────────────────────────────
-    final allScores = StringBuffer();
-    for (int i = 0; i < bestScores.length; i++) {
-      final label = i < _labels.length ? _labels[i] : 'class_$i';
-      allScores.write('$label=${bestScores[i].toStringAsFixed(4)} ');
-    }
+      // ── 2. Center square crop to preserve aspect ratio ──────────────────────
+      final minDim = orientedImage.width < orientedImage.height
+          ? orientedImage.width
+          : orientedImage.height;
+      final cropX = (orientedImage.width - minDim) ~/ 2;
+      final cropY = (orientedImage.height - minDim) ~/ 2;
 
-    developer.log(
-      'Inference ${stopwatch.elapsedMilliseconds}ms | Mode: $bestModeName | '
-      'Scores: $allScores',
-      name: 'CurrencyClassifierService',
-    );
+      final croppedImage = img.copyCrop(
+        orientedImage,
+        x: cropX,
+        y: cropY,
+        width: minDim,
+        height: minDim,
+      );
 
-    // ── 6. Adaptive Threshold Check ─────────────────────────────────────────
-    // On a 14-class model (random chance ~7.1%), top score >= 0.35 (35%) or a margin >= 0.15 over top-2
-    // represents a strong top-1 prediction for real camera capture.
-    double secondScore = 0.0;
-    for (int i = 0; i < bestScores.length; i++) {
-      if (i != bestTopIndex && bestScores[i] > secondScore) {
-        secondScore = bestScores[i];
+      // ── 3. Resize to 224x224 input tensor size ─────────────────────────────
+      final resized = img.copyResize(
+        croppedImage,
+        width: _inputWidth,
+        height: _inputHeight,
+        interpolation: img.Interpolation.linear,
+      );
+
+      // Store encoded JPEG bytes of the exact image sent to the model for Step 1 debug overlay
+      _lastPreprocessedDebugBytes = Uint8List.fromList(img.encodeJpg(resized, quality: 90));
+
+      // Fast 1ms lens-covered check on 224x224 image (avoids processing pitch black frames)
+      double sumLuma = 0.0;
+      for (int y = 0; y < _inputHeight; y += 4) {
+        for (int x = 0; x < _inputWidth; x += 4) {
+          final p = resized.getPixel(x, y);
+          sumLuma += (0.299 * p.r + 0.587 * p.g + 0.114 * p.b);
+        }
       }
+      final avgLuma = sumLuma / (56 * 56);
+      if (avgLuma < 8.0) {
+        return const CurrencyClassificationResult(
+          isConfident: false,
+          classLabel: 'Lens Covered / Pitch Black',
+          confidence: 0.0,
+        );
+      }
+
+      if (_isDisposed) {
+        return const CurrencyClassificationResult(
+          isConfident: false,
+          classLabel: 'Unknown',
+          confidence: 0.0,
+        );
+      }
+
+      // ── 4. Apply PyTorch ImageNet Normalization ──────────────────────────────
+      final numClasses = _labels.isEmpty ? 6 : _labels.length;
+      final inputBuffer = Float32List(_inputHeight * _inputWidth * 3);
+      
+      int idx = 0;
+      for (int y = 0; y < _inputHeight; y++) {
+        for (int x = 0; x < _inputWidth; x++) {
+          final pixel = resized.getPixel(x, y);
+          inputBuffer[idx++] = ((pixel.r.toDouble() / 255.0) - 0.485) / 0.229;
+          inputBuffer[idx++] = ((pixel.g.toDouble() / 255.0) - 0.456) / 0.224;
+          inputBuffer[idx++] = ((pixel.b.toDouble() / 255.0) - 0.406) / 0.225;
+        }
+      }
+
+      if (_isDisposed) {
+        return const CurrencyClassificationResult(
+          isConfident: false,
+          classLabel: 'Unknown',
+          confidence: 0.0,
+        );
+      }
+
+      final stopwatch = Stopwatch()..start();
+      final input = inputBuffer.reshape([1, _inputHeight, _inputWidth, 3]);
+      final output = List.generate(1, (_) => List.filled(numClasses, 0.0));
+      
+      _interpreter!.run(input, output);
+
+      final rawScores = output[0];
+      final probs = _computeSoftmax(rawScores);
+
+      int bestTopIndex = 0;
+      double bestTopScore = probs[0];
+      for (int i = 1; i < probs.length; i++) {
+        if (probs[i] > bestTopScore) {
+          bestTopScore = probs[i];
+          bestTopIndex = i;
+        }
+      }
+      final bestScores = probs;
+      final bestModeName = 'PyTorch ImageNet';
+
+      stopwatch.stop();
+
+      // ── 5. Log inference results ─────────────────────────────────────────────
+      final allScores = StringBuffer();
+      for (int i = 0; i < bestScores.length; i++) {
+        final label = i < _labels.length ? _labels[i] : 'class_$i';
+        allScores.write('$label=${bestScores[i].toStringAsFixed(4)} ');
+      }
+
+      developer.log(
+        'Inference ${stopwatch.elapsedMilliseconds}ms | Mode: $bestModeName | '
+        'Scores: $allScores',
+        name: 'CurrencyClassifierService',
+      );
+
+      final topLabel = bestTopIndex < _labels.length
+          ? _labels[bestTopIndex]
+          : 'class_$bestTopIndex';
+      final isConfident = bestTopScore >= confidenceThreshold;
+
+      return CurrencyClassificationResult(
+        isConfident: isConfident,
+        classLabel: topLabel,
+        confidence: bestTopScore,
+      );
+    } finally {
+      _isProcessing = false;
     }
-
-    final margin = bestTopScore - secondScore;
-    final isConfident = bestTopScore >= 0.35 || margin >= 0.15;
-
-    final label = bestTopIndex < _labels.length ? _labels[bestTopIndex] : 'Unknown';
-
-    developer.log(
-      'Top-1: "$label" (index $bestTopIndex) | Mode: $bestModeName | '
-      'Conf: ${(bestTopScore * 100).toStringAsFixed(1)}% | Second: ${(secondScore * 100).toStringAsFixed(1)}% | '
-      'Margin: ${(margin * 100).toStringAsFixed(1)}% | isConfident=$isConfident',
-      name: 'CurrencyClassifierService',
-    );
-
-    return CurrencyClassificationResult(
-      isConfident: isConfident,
-      classLabel: label,
-      confidence: bestTopScore,
-    );
   }
 
   /// Helper to convert raw model logits to Softmax probabilities [0, 1].
@@ -288,7 +288,11 @@ class CurrencyClassifierService {
   }
 
   /// Release native interpreter memory. Call in screen's dispose().
-  void dispose() {
+  Future<void> dispose() async {
+    _isDisposed = true;
+    while (_isProcessing) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
     _interpreter?.close();
     _interpreter = null;
     _isLoaded = false;

@@ -23,7 +23,9 @@ subprojects {
         tasks.withType<KotlinCompile>().configureEach {
             compilerOptions {
                 val target = if (project.name == "tflite_flutter" ||
-                    project.name == "google_mlkit_document_scanner") {
+                    project.name == "google_mlkit_document_scanner" ||
+                    project.name == "flutter_tts" ||
+                    project.name == "flutter_tesseract_ocr") {
                     JvmTarget.JVM_11
                 } else {
                     JvmTarget.JVM_17
