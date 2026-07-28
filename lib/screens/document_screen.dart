@@ -12,6 +12,7 @@ import '../core/document_ocr_service.dart';
 import '../core/guidance_engine.dart';
 import '../core/live_quad_detector.dart';
 import '../core/line_sequencer.dart';
+import '../core/history_service.dart';
 import '../widgets/primary_button.dart';
 import 'camera_base_screen.dart';
 
@@ -47,6 +48,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   Color _statusColor = Colors.white;
 
   bool _isDisposed = false;
+  bool _isExiting = false;
   bool _isScanning = false;
   bool _isProcessingFrame = false;
 
@@ -79,7 +81,9 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
     _isDisposed = true;
     _resultScrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_tts.stop());
+    if (!_isExiting) {
+      unawaited(_tts.stop());
+    }
     unawaited(_cleanupAndDispose());
     super.dispose();
   }
@@ -219,6 +223,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
       final fullText = lines.map((l) => l.text).join('. ');
       unawaited(_tts.stop());
       unawaited(_tts.speak(fullText));
+      unawaited(HistoryService.saveScan(type: 'Document Reader', result: fullText));
 
       _startLineByLineReading();
     } catch (e) {
@@ -362,6 +367,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
       onHorizontalDragEnd: (details) {
         if ((details.primaryVelocity ?? 0) > 200 || (details.primaryVelocity ?? 0) < -200) {
           HapticFeedback.mediumImpact();
+          _isExiting = true;
           unawaited(_tts.stop());
           unawaited(_tts.speak('واپس جا رہے ہیں'));
           if (Navigator.of(context).canPop()) {

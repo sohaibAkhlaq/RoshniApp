@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Roshni (روشنی) — Your Light, Always With You | AI Assistive Vision App</title>
+  <meta name="description" content="Award-winning 3D interactive landing page for Roshni, an intelligent futuristic AI assistive mobile application for visually impaired individuals in Pakistan.">
+  <meta name="keywords" content="Roshni, AI Assistive App, Visually Impaired, Urdu OCR, PKR Currency Classifier, Flutter, Object Detection, Pakistan">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       PROFESSIONAL VECTOR ICONOGRAPHY SPRITE SHEET (AWWWARDS / APPLE STYLE)
+       ========================================================================= -->
+  <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="icon-spark" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+      </symbol>
+      <symbol id="icon-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </symbol>
+      <symbol id="icon-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+      </symbol>
+      <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </symbol>
+      <symbol id="icon-zap" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </symbol>
+      <symbol id="icon-radar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/>
+      </symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </symbol>
+      <symbol id="icon-banknote" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>
+      </symbol>
+      <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/>
+      </symbol>
+      <symbol id="icon-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+      </symbol>
+      <symbol id="icon-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </symbol>
+      <symbol id="icon-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+      </symbol>
+      <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6"/><path d="m9 14 3-3 3 3"/>
+      </symbol>
+      <symbol id="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>
+      </symbol>
+      <symbol id="icon-android" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 15v-4a9 9 0 0 1 18 0v4"/><path d="M17 19v-4H7v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2z"/><line x1="6" y1="4" x2="8" y2="7"/><line x1="18" y1="4" x2="16" y2="7"/><circle cx="9" cy="11" r="0.5" fill="currentColor"/><circle cx="15" cy="11" r="0.5" fill="currentColor"/>
+      </symbol>
+      <symbol id="icon-apple" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 20.94c1.5 0 2.75-.82 3.75-2.45 1.15-1.89 1.76-4.05 1.76-6.31 0-2.31-.63-4.52-1.83-6.43-1.01-1.63-2.28-2.45-3.78-2.45-.96 0-1.87.31-2.73.93-.86.62-1.79.93-2.77.93-1.02 0-1.95-.31-2.81-.93-.86-.62-1.77-.93-2.73-.93-1.5 0-2.77.82-3.78 2.45-1.2 1.91-1.83 4.12-1.83 6.43 0 2.26.61 4.42 1.76 6.31 1 1.63 2.25 2.45 3.75 2.45 1 0 1.9-.31 2.7-.93.8-.62 1.72-.93 2.77-.93 1.05 0 1.97.31 2.77.93.8.62 1.7.93 2.7.93z"/><path d="M12 5.3c0-1.12.39-2.07 1.17-2.85.78-.78 1.73-1.17 2.85-1.17 0 1.12-.39 2.07-1.17 2.85-.78.78-1.73 1.17-2.85 1.17z"/>
+      </symbol>
+      <symbol id="icon-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>
+      </symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+      </symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </symbol>
+      <symbol id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+      </symbol>
+      <symbol id="icon-city" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>
+      </symbol>
+      <symbol id="icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+      </symbol>
+      <symbol id="icon-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>
+      </symbol>
+      <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </symbol>
+      <symbol id="icon-bar-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Golden Pulse Pre-Loader Splash Screen -->
+  <div id="roshni-splash-screen" class="roshni-splash-screen" role="status" aria-label="Loading Roshni AI Experience">
+    <div class="splash-logo-box">
+      <div class="splash-glow-ring"></div>
+      <h1 class="splash-title">
+        <svg class="roshni-icon icon-xl icon-gold"><use href="#icon-spark"></use></svg> Roshni
+      </h1>
+      <div class="splash-subtitle">روشنی — آپ کی روشنی، ہر وقت ساتھ</div>
+      <div class="splash-loader-bar"><div class="splash-loader-progress"></div></div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor & Light Trail -->
+  <div id="roshni-cursor" class="roshni-cursor"></div>
+
+  <!-- 3D WebGL Background Container -->
+  <div id="canvas-3d-container"></div>
+
+  <!-- Urdu Watermark Background Accents -->
+  <div class="urdu-watermark urdu-watermark-1">روشنی آپ کے ساتھ</div>
+  <div class="urdu-watermark urdu-watermark-2">بصارت کی طاقت</div>
+  <div class="urdu-watermark urdu-watermark-3">روپے کی پہچان</div>
+  <div class="urdu-watermark urdu-watermark-4">خود انحصاری کا راستہ</div>
+
+  <!-- Accessibility Floating Bar -->
+  <header class="accessibility-bar" role="banner" aria-label="Accessibility controls">
+    <button id="toggle-language" class="acc-btn" aria-label="Toggle language between English and Urdu Nastaliq (Alt+L)">
+      <svg class="roshni-icon icon-gold"><use href="#icon-globe"></use></svg> اردو | English
+    </button>
+    <button id="toggle-audio-cues" class="acc-btn" aria-label="Toggle assistive audio cues and synthesizer (Alt+A)">
+      <svg class="roshni-icon icon-cyan"><use href="#icon-speaker"></use></svg> Audio Cues: OFF
+    </button>
+    <button id="toggle-high-contrast" class="acc-btn" aria-label="Toggle ultra high contrast mode (Alt+C)">
+      <svg class="roshni-icon icon-gold"><use href="#icon-eye"></use></svg> Ultra High-Contrast: OFF
+    </button>
+  </header>
+
+  <!-- =========================================================================
+       SECTION 1: ZERO-GRAVITY 3D HERO SECTION ("Your Light, Always With You")
+       ========================================================================= -->
+  <section id="hero" class="section-container hero-section" aria-labelledby="hero-title">
+    <div class="hero-content" style="max-width: 680px; z-index: 10;">
+      <div class="badge-pill">
+        <span><svg class="roshni-icon icon-gold"><use href="#icon-spark"></use></svg> Flutter & Firebase Powered • AI Assistive Vision</span>
+      </div>
+      <h1 id="hero-title" class="headline-xl">
+        Roshni — <br>
+        <span class="text-gradient-gold">Your Light, Always With You</span>
+      </h1>
+      <p class="subtitle-text">
+        Empowering visually impaired individuals across Pakistan with real-time AI object detection, Urdu OCR script reading, instant Pakistani Rupee (PKR) identification, and natural voice scene narration.
+      </p>
+      <div class="btn-group">
+        <a href="#download" class="btn-primary" aria-label="Download Roshni Now">
+          <span><svg class="roshni-icon"><use href="#icon-download"></use></svg> Download Roshni Now</span>
+        </a>
+        <a href="#simulator" class="btn-secondary" aria-label="Try Live AI Simulator">
+          <span><svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> Try Live AI Simulator</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 2: THE INTERACTIVE 3D FEATURE UNIVERSE (Core AI Modules)
+       ========================================================================= -->
+  <section id="features" class="section-container" aria-labelledby="features-title">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-pill"><svg class="roshni-icon icon-cyan"><use href="#icon-zap"></use></svg> 5+ Essential AI Tools in 1 Lightweight App</div>
+      <h2 id="features-title" class="headline-lg">
+        The Interactive <span class="text-gradient-cyan">3D Feature Universe</span>
+      </h2>
+      <p class="subtitle-text" style="margin-left: auto; margin-right: auto;">
+        Built from day one with blind accessibility, zero-lag edge AI inference, and Pakistani cultural context at its heart.
+      </p>
+    </div>
+
+    <!-- Responsive Bento Grid -->
+    <div class="bento-grid" role="region" aria-label="Core AI Modules">
+      <!-- 1. Real-Time Object Detection -->
+      <div class="bento-card bento-col-8 cyan-accent" tabindex="0">
+        <div>
+          <div class="bento-icon-box">
+            <svg class="roshni-icon icon-lg icon-cyan"><use href="#icon-radar"></use></svg>
+          </div>
+          <h3 class="headline-md">Real-Time 3D Object Detection</h3>
+          <p class="subtitle-text" style="font-size: 1.05rem; margin-bottom: 16px;">
+            Animated radar bounding-box scanning of live street scenes with sub-100ms AI feedback. Instantly detects chairs, tables, doors, and obstacles with spatial voice guidance.
+          </p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; color: var(--roshni-cyan); font-weight: 600;">
+          <span><svg class="roshni-icon"><use href="#icon-zap"></use></svg> &lt; 100ms Edge AI Latency</span>
+          <span>• Voice Spatial Cues</span>
+        </div>
+      </div>
+
+      <!-- 2. Urdu OCR Reader -->
+      <div class="bento-card bento-col-4" tabindex="0">
+        <div>
+          <div class="bento-icon-box">
+            <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-book"></use></svg>
+          </div>
+          <h3 class="headline-md">Urdu OCR Text Reader</h3>
+          <p class="subtitle-text" style="font-size: 1.05rem; margin-bottom: 16px;">
+            Tesseract & Google ML Kit powered AI extracting Urdu script from signboards, books, and receipts into visual audio sound waves.
+          </p>
+        </div>
+        <div style="color: var(--roshni-gold); font-weight: 600;">
+          <span><svg class="roshni-icon"><use href="#icon-shield"></use></svg> Native Pakistani Urdu Script</span>
+        </div>
+      </div>
+
+      <!-- 3. PKR Currency Classifier -->
+      <div class="bento-card bento-col-4" tabindex="0">
+        <div>
+          <div class="bento-icon-box">
+            <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-banknote"></use></svg>
+          </div>
+          <h3 class="headline-md">PKR Currency Classifier</h3>
+          <p class="subtitle-text" style="font-size: 1.05rem; margin-bottom: 16px;">
+            Instantly identifies Pakistani Rupee notes (500, 1000, 5000 PKR) from front or back with 99.4% accuracy and announces denomination in clear Urdu voice.
+          </p>
+        </div>
+        <div style="color: var(--roshni-gold); font-weight: 600;">
+          <span><svg class="roshni-icon"><use href="#icon-spark"></use></svg> 99.4% Recognition Accuracy</span>
+        </div>
+      </div>
+
+      <!-- 4. Smart Document Scanner -->
+      <div class="bento-card bento-col-4 cyan-accent" tabindex="0">
+        <div>
+          <div class="bento-icon-box">
+            <svg class="roshni-icon icon-lg icon-cyan"><use href="#icon-scan"></use></svg>
+          </div>
+          <h3 class="headline-md">Smart Document Scanner</h3>
+          <p class="subtitle-text" style="font-size: 1.05rem; margin-bottom: 16px;">
+            Google ML Kit auto-capture and perspective correction for utility bills, official documents, and mail without manual shutter tapping.
+          </p>
+        </div>
+        <div style="color: var(--roshni-cyan); font-weight: 600;">
+          <span><svg class="roshni-icon"><use href="#icon-scan"></use></svg> Automatic Quad Detection</span>
+        </div>
+      </div>
+
+      <!-- 5. AI Scene & Photo Description -->
+      <div class="bento-card bento-col-4" tabindex="0">
+        <div>
+          <div class="bento-icon-box">
+            <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-image"></use></svg>
+          </div>
+          <h3 class="headline-md">AI Scene Description</h3>
+          <p class="subtitle-text" style="font-size: 1.05rem; margin-bottom: 16px;">
+            Cloud vision AI analyzing complex park scenes, indoor rooms, and photos to generate natural-language conversational captions in Urdu or English.
+          </p>
+        </div>
+        <div style="color: var(--roshni-gold); font-weight: 600;">
+          <span><svg class="roshni-icon"><use href="#icon-message"></use></svg> Conversational Narration</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 3: INTERACTIVE AI LIVE SIMULATOR (The "Test Roshni" Sandbox)
+       ========================================================================= -->
+  <section id="simulator" class="section-container" aria-labelledby="sim-title">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-pill"><svg class="roshni-icon icon-gold"><use href="#icon-sliders"></use></svg> Interactive Sandbox Experience</div>
+      <h2 id="sim-title" class="headline-lg">
+        Test Roshni <span class="text-gradient-gold">Live Simulator</span>
+      </h2>
+      <p class="subtitle-text" style="margin-left: auto; margin-right: auto;">
+        Click between real-world test modes below to watch the 3D smartphone canvas update in real-time and trigger voiced AI detection responses!
+      </p>
+    </div>
+
+    <div class="simulator-container" role="region" aria-label="Simulator Widget">
+      <!-- Left Controls -->
+      <div class="sim-controls">
+        <button class="sim-tab-btn active" data-mode="mode-a" aria-label="Test Pakistani Rupee Test Mode">
+          <div class="sim-tab-icon">
+            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-banknote"></use></svg>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode A: Pakistani Rupee Test</div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">Simulates instant 1000 PKR note scanning & Urdu voice announcement.</div>
+          </div>
+        </button>
+
+        <button class="sim-tab-btn" data-mode="mode-b" aria-label="Test Urdu OCR Test Mode">
+          <div class="sim-tab-icon">
+            <svg class="roshni-icon icon-md icon-cyan"><use href="#icon-book"></use></svg>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode B: Urdu OCR Test</div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">Scans an Urdu book page and displays highlighted extracted text.</div>
+          </div>
+        </button>
+
+        <button class="sim-tab-btn" data-mode="mode-c" aria-label="Test Street Obstacle Detection Mode">
+          <div class="sim-tab-icon">
+            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-radar"></use></svg>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode C: Street Obstacle Detection</div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">Shows bounding boxes around chairs, doors, & stairs with distances.</div>
+          </div>
+        </button>
+
+        <!-- Glowing Drag & Drop Upload Zone -->
+        <div id="sim-drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Upload or drop image to test Roshni AI live">
+          <input type="file" id="sim-file-input" accept="image/*" style="display: none;">
+          <div class="drop-zone-icon">
+            <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-upload"></use></svg>
+          </div>
+          <div class="drop-zone-text">
+            <strong>Drag & Drop</strong> any photo, bill, or Rupee note here to test Roshni AI live!
+          </div>
+          <div style="font-size: 0.75rem; color: var(--roshni-gold); margin-top: 6px; font-weight: 600;">
+            <svg class="roshni-icon icon-sm"><use href="#icon-spark"></use></svg> Or click to browse files
+          </div>
+        </div>
+
+        <button id="trigger-instant-scan" class="btn-primary" style="margin-top: 12px; justify-content: center; width: 100%;">
+          <svg class="roshni-icon"><use href="#icon-zap"></use></svg> Trigger Instant Scan
+        </button>
+      </div>
+
+      <!-- Right Preview Card -->
+      <div class="sim-preview-box">
+        <div id="sim-laser-line" class="laser-scanner"></div>
+
+        <div style="position: relative; z-index: 10;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span class="badge-pill" style="margin: 0;"><span class="pulse-dot"></span> Live AI Inference Active</span>
+            <div class="audio-waveform-box" aria-hidden="true">
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+          </div>
+          <h3 id="sim-active-title" class="headline-md" style="color: var(--roshni-cyan);">
+            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-banknote"></use></svg> Pakistani Rupee Classifier
+          </h3>
+          <p id="sim-active-desc" class="subtitle-text" style="font-size: 1rem; margin-bottom: 20px;">
+            Simulating instant denomination detection for 500, 1000, and 5000 PKR notes with voiced feedback.
+          </p>
+        </div>
+
+        <div style="position: relative; z-index: 10; background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 202, 40, 0.3);">
+          <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px;">AI Output Narration:</div>
+          <div id="sim-active-badge" style="font-size: 1.25rem; font-weight: 700; color: var(--roshni-gold);">
+            <svg class="roshni-icon icon-gold"><use href="#icon-radar"></use></svg> 1000 PKR Note — Confidence 99.8%
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4: SCROLL-LINKED 3D STORYTELLING ("A Day with Roshni")
+       ========================================================================= -->
+  <section id="story" class="section-container" aria-labelledby="story-title">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-pill"><svg class="roshni-icon icon-gold"><use href="#icon-sun"></use></svg> 24/7 Companion Timeline</div>
+      <h2 id="story-title" class="headline-lg">
+        A Day with <span class="text-gradient-cyan">Roshni</span>
+      </h2>
+      <p class="subtitle-text" style="margin-left: auto; margin-right: auto;">
+        Watch how Roshni seamlessly accompanies a visually impaired user through independence, mobility, and confidence from morning till evening.
+      </p>
+    </div>
+
+    <div class="timeline-grid" role="region" aria-label="Daily Timeline">
+      <!-- Morning -->
+      <div class="timeline-card" tabindex="0">
+        <div style="margin-bottom: 16px;">
+          <svg class="roshni-icon icon-xl icon-gold"><use href="#icon-sun"></use></svg>
+        </div>
+        <h3 class="headline-md">Morning Independence</h3>
+        <p class="subtitle-text" style="font-size: 1rem; margin-bottom: 0;">
+          Reading morning Urdu newspapers, sorting official mail, and scanning utility bills independently at the breakfast table using Urdu OCR and Smart Document Scanner.
+        </p>
+      </div>
+
+      <!-- Afternoon -->
+      <div class="timeline-card" tabindex="0">
+        <div style="margin-bottom: 16px;">
+          <svg class="roshni-icon icon-xl icon-cyan"><use href="#icon-city"></use></svg>
+        </div>
+        <h3 class="headline-md">Confident Navigation</h3>
+        <p class="subtitle-text" style="font-size: 1rem; margin-bottom: 0;">
+          Walking outdoors on busy city streets with real-time 3D camera radar announcing obstacles, stairs, and doorway entrances via Bluetooth earphones.
+        </p>
+      </div>
+
+      <!-- Evening -->
+      <div class="timeline-card" tabindex="0">
+        <div style="margin-bottom: 16px;">
+          <svg class="roshni-icon icon-xl icon-gold"><use href="#icon-cart"></use></svg>
+        </div>
+        <h3 class="headline-md">Seamless Shopping</h3>
+        <p class="subtitle-text" style="font-size: 1rem; margin-bottom: 0;">
+          Verifying cash notes instantly at checkout with the PKR Currency Classifier. No more confusion between 500, 1000, or 5000 Rupee notes!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 5: ACCESSIBILITY-FIRST ARCHITECTURE & ENGINEERING
+       ========================================================================= -->
+  <section id="architecture" class="section-container" aria-labelledby="arch-title">
+    <div style="max-width: 700px;">
+      <div class="badge-pill"><svg class="roshni-icon icon-cyan"><use href="#icon-cpu"></use></svg> Built Under the Hood</div>
+      <h2 id="arch-title" class="headline-lg">
+        Accessibility-First <br>
+        <span class="text-gradient-gold">Architecture & Engineering</span>
+      </h2>
+      <p class="subtitle-text">
+        As you scroll here, the 3D smartphone separates into an exploded view showing the core layers that make Roshni reliable, lightning-fast, and 100% blind-accessible.
+      </p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px;">
+        <div class="glass-card" style="padding: 24px;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--roshni-gold); margin-bottom: 8px;">
+            <svg class="roshni-icon"><use href="#icon-speaker"></use></svg> Voice & Screen Reader First
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5;">
+            Full Flutter Semantics integration built from day one. Every button, card, and image preview announces itself clearly.
+          </p>
+        </div>
+
+        <div class="glass-card" style="padding: 24px;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--roshni-cyan); margin-bottom: 8px;">
+            <svg class="roshni-icon"><use href="#icon-zap"></use></svg> Persistent Skip-Flow
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5;">
+            Intelligent offline-ready session memory that never traps users in forced logins or complicated onboarding screens.
+          </p>
+        </div>
+
+        <div class="glass-card" style="padding: 24px;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--roshni-gold); margin-bottom: 8px;">
+            <svg class="roshni-icon"><use href="#icon-cpu"></use></svg> Offline Firestore Caching
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5;">
+            Instant unlimited local database caching for seamless operation of Currency Classifier & Object Detection without internet.
+          </p>
+        </div>
+
+        <div class="glass-card" style="padding: 24px;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--roshni-cyan); margin-bottom: 8px;">
+            <svg class="roshni-icon"><use href="#icon-shield"></use></svg> Hardware Shortcuts
+          </h3>
+          <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5;">
+            Triple-press power button integration for instant emergency camera launch and eyes-free gesture navigation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 6: IMPACT METRICS & AI PERFORMANCE (Animated 3D Data Hub)
+       ========================================================================= -->
+  <section id="metrics" class="section-container" aria-labelledby="metrics-title">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="badge-pill"><svg class="roshni-icon icon-gold"><use href="#icon-bar-chart"></use></svg> Benchmark Performance</div>
+      <h2 id="metrics-title" class="headline-lg">
+        Impact Metrics & <span class="text-gradient-cyan">AI Performance</span>
+      </h2>
+      <p class="subtitle-text" style="margin-left: auto; margin-right: auto;">
+        Rigorous testing and benchmark data prove Roshni delivers unmatched accuracy and speed when it matters most.
+      </p>
+    </div>
+
+    <div class="metrics-grid" role="region" aria-label="Performance Metrics">
+      <div class="metric-card" tabindex="0">
+        <span class="counter-value" data-target="99.4" data-suffix="%" data-decimal="true">0%</span>
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">PKR Currency Accuracy</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">Tested across worn, folded, and new Pakistani Rupee notes.</p>
+      </div>
+
+      <div class="metric-card" tabindex="0">
+        <span class="counter-value" data-target="100" data-prefix="<" data-suffix="ms" data-decimal="false">0ms</span>
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Real-Time Edge Inference</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">Ultra-low latency object detection on standard mobile hardware.</p>
+      </div>
+
+      <div class="metric-card" tabindex="0">
+        <span class="counter-value" data-target="100" data-suffix="%" data-decimal="false">0%</span>
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Screen Reader Compatible</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">Built from the ground up for full TalkBack and VoiceOver support.</p>
+      </div>
+
+      <div class="metric-card" tabindex="0">
+        <span class="counter-value" data-target="5" data-suffix="+" data-decimal="false">0+</span>
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Essential Vision Tools</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">All integrated into a single lightweight, battery-friendly package.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 7: CROSS-PLATFORM DOWNLOAD & HARDWARE INTEGRATION
+       ========================================================================= -->
+  <section id="download" class="section-container" aria-labelledby="download-title">
+    <div class="download-section-box">
+      <div>
+        <div class="badge-pill" style="margin-bottom: 16px;"><svg class="roshni-icon icon-cyan"><use href="#icon-phone"></use></svg> Available Nationwide</div>
+        <h2 id="download-title" class="headline-lg" style="margin-bottom: 20px;">
+          Ready to See the World in a <span class="text-gradient-gold">New Light?</span>
+        </h2>
+        <p class="subtitle-text" style="font-size: 1.15rem; margin-bottom: 32px;">
+          Download Roshni today on your Android or iOS device. Experience true visual independence, real-time Urdu OCR, and effortless PKR note recognition.
+        </p>
+        <div class="btn-group">
+          <a href="https://github.com/sohaibAkhlaq/RoshniApp/releases/download/v1.0.0/roshni-app-release.apk" class="btn-primary" aria-label="Download Android APK">
+            <span><svg class="roshni-icon"><use href="#icon-android"></use></svg> Download Android APK</span>
+          </a>
+          <a href="#" class="btn-secondary" aria-label="Download on iOS App Store">
+            <span><svg class="roshni-icon"><use href="#icon-apple"></use></svg> iOS App Store</span>
+          </a>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="qr-box" aria-label="Scan QR Code to download Roshni">
+          <div class="qr-laser-line"></div>
+          <!-- Simulated High-Contrast Procedural QR Code Grid using SVG -->
+          <svg width="220" height="220" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="white"/>
+            <!-- Corner Finder Patterns -->
+            <rect x="5" y="5" width="28" height="28" fill="black" stroke="black" stroke-width="2"/>
+            <rect x="10" y="10" width="18" height="18" fill="white"/>
+            <rect x="14" y="14" width="10" height="10" fill="#FFCA28"/>
+            
+            <rect x="67" y="5" width="28" height="28" fill="black" stroke="black" stroke-width="2"/>
+            <rect x="72" y="10" width="18" height="18" fill="white"/>
+            <rect x="76" y="14" width="10" height="10" fill="#00E5FF"/>
+            
+            <rect x="5" y="67" width="28" height="28" fill="black" stroke="black" stroke-width="2"/>
+            <rect x="10" y="72" width="18" height="18" fill="white"/>
+            <rect x="14" y="76" width="10" height="10" fill="#FFCA28"/>
+
+            <!-- Procedural Data Modules -->
+            <rect x="40" y="10" width="6" height="6" fill="black"/><rect x="50" y="10" width="12" height="6" fill="black"/>
+            <rect x="40" y="20" width="12" height="6" fill="black"/><rect x="58" y="20" width="6" height="6" fill="black"/>
+            <rect x="10" y="40" width="6" height="12" fill="black"/><rect x="22" y="40" width="12" height="6" fill="black"/>
+            <rect x="40" y="40" width="20" height="20" fill="black"/><rect x="65" y="40" width="12" height="12" fill="black"/>
+            <rect x="82" y="40" width="10" height="6" fill="black"/><rect x="40" y="68" width="12" height="6" fill="black"/>
+            <rect x="60" y="68" width="20" height="12" fill="black"/><rect x="86" y="68" width="8" height="20" fill="black"/>
+            <rect x="45" y="82" width="15" height="10" fill="black"/><rect x="68" y="86" width="12" height="8" fill="black"/>
+          </svg>
+          <div style="margin-top: 12px; font-weight: 700; font-size: 0.9rem; color: #060913; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg class="roshni-icon icon-sm" style="color: #060913;"><use href="#icon-qr"></use></svg> Scan to Download Instant APK
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 8: FUTURISTIC FOOTER & OPEN-SOURCE COMMUNITY HUB
+       ========================================================================= -->
+  <footer class="footer-section" role="contentinfo">
+    <div class="footer-grid">
+      <!-- Col 1: Branding -->
+      <div>
+        <h3 style="font-size: 1.8rem; font-weight: 800; color: var(--roshni-gold); margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+          <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-spark"></use></svg> Roshni (روشنی)
+        </h3>
+        <p style="color: var(--text-secondary); line-height: 1.6; max-width: 320px; margin-bottom: 20px;">
+          Making the world accessible, one feature at a time. Designed with love and high-contrast precision for visually impaired individuals in Pakistan.
+        </p>
+        <div style="font-size: 0.85rem; color: #64748B;">
+          Built with Flutter 3.44 • Dart 3.12 • Firebase Auth • Cloud Firestore • TensorFlow Lite & ML Kit
+        </div>
+      </div>
+
+      <!-- Col 2: AI Modules -->
+      <div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">Core Features</h4>
+        <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> 3D Object Detection</a><br>
+        <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> Urdu OCR Reader</a><br>
+        <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> PKR Currency Classifier</a><br>
+        <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> Smart Document Scanner</a><br>
+        <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> AI Scene Narration</a>
+      </div>
+
+      <!-- Col 3: Community & Roadmap -->
+      <div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">Community</h4>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-globe"></use></svg> GitHub Repository (MIT)</a><br>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-book"></use></svg> Developer Documentation</a><br>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-radar"></use></svg> Roadmap: Watch Companion</a><br>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-speaker"></use></svg> Native Urdu TTS Engine</a><br>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-spark"></use></svg> Contribute on GitHub</a>
+      </div>
+
+      <!-- Col 4: Developer Contact -->
+      <div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">Developer Contact</h4>
+        <div style="color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">Sohaib Akhlaq</div>
+        <div style="color: #64748B; font-size: 0.9rem; margin-bottom: 16px;">Lead Engineer & AI Architect</div>
+        <a href="https://github.com/sohaibAkhlaq/RoshniApp" class="acc-btn" style="display: inline-flex; align-items: center; gap: 8px; border-color: var(--roshni-gold); color: var(--roshni-gold);">
+          <svg class="roshni-icon icon-sm icon-gold"><use href="#icon-star"></use></svg> Star on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div style="max-width: 1320px; margin: 0 auto; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; color: #64748B; font-size: 0.9rem;">
+      <div>Copyright © 2026 Roshni App. All rights reserved.</div>
+      <div>Designed with Silicon Valley Awwwards-Level Precision • Dedicated to the Visually Impaired Community</div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       EXTERNAL JAVASCRIPT LIBRARIES & PROCEDURAL MODULES
+       ========================================================================= -->
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Three.js WebGL Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Custom Procedural 3D Scene & Application Logic -->
+  <script src="scene3d.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

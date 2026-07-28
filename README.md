@@ -7,6 +7,7 @@
 [![Dart](https://img.shields.io/badge/Dart-3.12-0175C2?logo=dart)](https://dart.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase)](https://firebase.google.com)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Vercel](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=flat&logo=vercel)](https://roshni-app.vercel.app)
 
 ---
 
@@ -55,6 +56,31 @@ The app features a **complete authentication system** with Firebase, supporting 
 | **Navigation** | Custom screen-index manager + `Navigator` pushes |
 | **Design** | Material 3, custom amber-gold theme |
 
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    subgraph UI [Flutter Frontend]
+        A(Camera Viewfinder)
+        B(Audio Guidance Engine)
+        C(Semantic UI / TalkBack)
+    end
+    
+    subgraph Core [AI Processing Layer]
+        D[Google ML Kit OCR]
+        E[OpenCV Edge Detection]
+        F[TFLite Vision Models]
+    end
+    
+    subgraph Cloud [Firebase Backend]
+        G[(Cloud Firestore)]
+        H[Firebase Auth]
+    end
+    
+    UI <-->|Camera Frames & Haptics| Core
+    UI <-->|Auth & Scan History| Cloud
+```
+
 ---
 
 ## Project Structure
@@ -89,21 +115,25 @@ lib/
 
 ## Authentication Flow
 
-```
-App Launch → Splash → Permissions Check
-                            │
-               ┌────────────┴────────────┐
-               │                         │
-          Logged In                  Not Logged In
-          or Skipped?                and Not Skipped?
-               │                         │
-            Home ─────┐              Login Screen
-                      │              ├── Login (phone + password)
-                      │              ├── Skip for now ──→ Home (persisted)
-                      │              └── Sign Up ──→ CreateAccount ──→ Login
-                      │
-              Settings → Login/Sign Up
-                (only if not logged in)
+```mermaid
+graph TD
+    A[App Launch] --> B(Splash Screen)
+    B --> C{Permissions Check}
+    C -->|Granted| D{Auth State}
+    C -->|Denied| E[Permissions Screen]
+    E --> D
+    
+    D -->|Logged In / Skipped| F[Home Screen]
+    D -->|Not Logged In| G[Login Screen]
+    
+    G --> H[Sign In]
+    G --> I[Skip for Now]
+    G --> J[Sign Up]
+    
+    H --> F
+    I --> F
+    J --> K[Create Account]
+    K --> G
 ```
 
 - **Skip Flow:** Once a user taps "Skip for now", the app never shows the login screen again unless the user manually navigates to **Settings > Login / Sign Up**.

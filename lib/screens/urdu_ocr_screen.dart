@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
@@ -6,6 +7,7 @@ import 'camera_base_screen.dart';
 import '../widgets/primary_button.dart';
 import '../core/camera_service.dart';
 import '../core/ocr_service.dart';
+import '../core/history_service.dart';
 
 class UrduOCRScreen extends StatefulWidget {
   const UrduOCRScreen({super.key});
@@ -20,6 +22,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
   final FlutterTts _tts = FlutterTts();
 
   String _status = 'Initializing camera\nPoint at signboard - hold steady';
+  bool _isExiting = false;
   String _detectedText = '';
   Color _statusColor = Colors.white;
   bool _isProcessing = false;
@@ -62,7 +65,9 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
 
   @override
   void dispose() {
-    _tts.stop();
+    if (!_isExiting) {
+      _tts.stop();
+    }
     _cameraService.dispose();
     super.dispose();
   }
@@ -95,6 +100,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
         HapticFeedback.lightImpact();
         _tts.stop();
         _tts.speak(result.text);
+        HistoryService.saveScan(type: 'Urdu OCR Reader', result: result.text);
       } else {
         setState(() {
           _status = 'No readable text found\n\nقریب جا کر دوبارہ کوشش کریں';
@@ -141,6 +147,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
 
   void _onSwipeBack() {
     HapticFeedback.mediumImpact();
+    _isExiting = true;
     _tts.stop();
     _tts.speak("واپس جا رہے ہیں");
     Navigator.of(context).pop();

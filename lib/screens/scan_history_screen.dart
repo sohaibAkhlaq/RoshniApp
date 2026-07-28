@@ -1,50 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ScanHistoryScreen extends StatelessWidget {
   const ScanHistoryScreen({super.key});
 
+  String _formatTimeAgo(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
+  IconData _getIconForType(String type) {
+    switch (type.toLowerCase()) {
+      case 'object detection':
+        return Icons.search_rounded;
+      case 'currency classifier':
+      case 'currency':
+        return Icons.payments_outlined;
+      case 'urdu ocr reader':
+      case 'urdu ocr':
+      case 'document':
+        return Icons.menu_book_rounded;
+      default:
+        return Icons.history_rounded;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+    final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan History'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 20.0, left: 4.0),
-            child: Text(
-              'Your recent activities',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4B5563),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('scanHistory')
+            .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo))
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            // For testing/UI purposes without valid index, we can show a friendly message
+            debugPrint('Firestore Error: ${snapshot.error}');
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'No recent scan history available.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
               ),
-            ),
-          ),
-          _buildHistoryItem(
-            context,
-            'Object Detection',
-            '“Do kursiyan aage hain”',
-            '2 minutes ago',
-            Icons.search_rounded,
-          ),
-          _buildHistoryItem(
-            context,
-            'Currency Classifier',
-            'Rs. 10 notes detected',
-            '10 minutes ago',
-            Icons.payments_outlined,
-          ),
-          _buildHistoryItem(
-            context,
-            'Urdu OCR Reader',
-            'Bank of Punjab cash counter',
-            '1 hour ago',
-            Icons.menu_book_rounded,
-          ),
-        ],
+            );
+          }
+
+          final docs = snapshot.data?.docs ?? [];
+
+          if (docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'No scans in the last 7 days.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            itemCount: docs.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return const Padding(
+                  padding: EdgeInsets.only(bottom: 20.0, left: 4.0),
+                  child: Text(
+                    'Last 7 Days Activity',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4B5563),
+                    ),
+                  ),
+                );
+              }
+
+              final data = docs[index - 1].data() as Map<String, dynamic>;
+              final title = data['type'] as String? ?? 'Unknown Scan';
+              final subtitle = data['result'] as String? ?? 'No result';
+              final timestamp = (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();
+
+              return _buildHistoryItem(
+                context,
+                title,
+                subtitle,
+                _formatTimeAgo(timestamp),
+                _getIconForType(title),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -111,14 +180,19 @@ class ScanHistoryScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4B5563),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4B5563),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         timeAgo,
                         style: TextStyle(
@@ -133,11 +207,13 @@ class ScanHistoryScreen extends StatelessWidget {
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF111827),
                       height: 1.2,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

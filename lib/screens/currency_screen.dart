@@ -9,6 +9,7 @@ import 'camera_base_screen.dart';
 import '../core/camera_service.dart';
 import '../core/currency_classifier_service.dart';
 import '../core/currency_result_formatter.dart';
+import '../core/history_service.dart';
 import '../widgets/primary_button.dart';
 
 class CurrencyScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   final CameraService _cameraService = CameraService();
   final CurrencyClassifierService _classifierService = CurrencyClassifierService();
   final FlutterTts _tts = FlutterTts();
+  bool _isExiting = false;
 
   String _status = 'Initializing camera\nHold the note flat inside the frame';
   String _detectedUrdu = '';
@@ -82,7 +84,9 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   @override
   void dispose() {
     _isDisposed = true;
-    unawaited(_tts.stop());
+    if (!_isExiting) {
+      unawaited(_tts.stop());
+    }
     unawaited(_cleanupAndDispose());
     super.dispose();
   }
@@ -162,6 +166,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         HapticFeedback.lightImpact();
         unawaited(_tts.stop());
         unawaited(_tts.speak(urduSentence));
+        unawaited(HistoryService.saveScan(type: 'Currency Classifier', result: 'Detected: $englishLabel'));
         developer.log('TTS Speaking: $urduSentence', name: 'CurrencyScreen');
       } else {
         developer.log(
@@ -236,6 +241,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
       onHorizontalDragEnd: (details) {
         if ((details.primaryVelocity ?? 0) > 200 || (details.primaryVelocity ?? 0) < -200) {
           HapticFeedback.mediumImpact();
+          _isExiting = true;
           unawaited(_tts.stop());
           unawaited(_tts.speak('واپس جا رہے ہیں'));
           if (Navigator.of(context).canPop()) {

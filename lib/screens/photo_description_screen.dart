@@ -11,6 +11,7 @@ import '../core/image_preprocessor.dart';
 import '../core/photo_description_service.dart';
 import 'camera_base_screen.dart';
 import '../widgets/primary_button.dart';
+import '../core/history_service.dart';
 
 class PhotoDescriptionScreen extends StatefulWidget {
   const PhotoDescriptionScreen({super.key});
@@ -37,6 +38,7 @@ class _PhotoDescriptionScreenState extends State<PhotoDescriptionScreen>
   bool _cameraReady = false;
   bool _isInitializing = true;
   bool _isDisposed = false;
+  bool _isExiting = false;
 
   @override
   void initState() {
@@ -69,7 +71,9 @@ class _PhotoDescriptionScreenState extends State<PhotoDescriptionScreen>
   void dispose() {
     _isDisposed = true;
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_tts.stop());
+    if (!_isExiting) {
+      unawaited(_tts.stop());
+    }
     unawaited(_releaseCamera());
     super.dispose();
   }
@@ -198,6 +202,7 @@ class _PhotoDescriptionScreenState extends State<PhotoDescriptionScreen>
         });
         unawaited(_tts.stop());
         unawaited(_tts.speak(_detectedText));
+        unawaited(HistoryService.saveScan(type: 'Photo Description', result: _detectedText));
       } else {
         _showError(result.error ?? 'نامعلوم خرابی');
       }
@@ -337,6 +342,7 @@ class _PhotoDescriptionScreenState extends State<PhotoDescriptionScreen>
       onHorizontalDragEnd: (details) {
         if ((details.primaryVelocity ?? 0) > 200 || (details.primaryVelocity ?? 0) < -200) {
           HapticFeedback.mediumImpact();
+          _isExiting = true;
           unawaited(_tts.stop());
           unawaited(_tts.speak('واپس جا رہے ہیں'));
           if (Navigator.of(context).canPop()) {

@@ -9,6 +9,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import '../core/camera_service.dart';
 import '../core/detection_result_formatter.dart';
 import '../core/object_detection_service.dart';
+import '../core/history_service.dart';
 import 'camera_base_screen.dart';
 
 class ObjectDetectionScreen extends StatefulWidget {
@@ -37,6 +38,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
   List<ObjectDetection> _liveDetections = const [];
 
   bool _cameraReady = false;
+  bool _isExiting = false;
   bool _isInitializing = true;
   bool _isProcessingFrame = false;
   bool _isDisposed = false;
@@ -81,7 +83,9 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
   }
 
   Future<void> _cleanupAndDispose() async {
-    _tts.stop();
+    if (!_isExiting) {
+      _tts.stop();
+    }
     _cameraReady = false;
     await _stopImageStream();
     await _cameraService.dispose();
@@ -196,6 +200,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
 
     if (detections.isNotEmpty) {
       HapticFeedback.lightImpact();
+      unawaited(HistoryService.saveScan(type: 'Object Detection', result: sentence));
     }
     _tts.stop();
     _tts.speak(sentence);
@@ -383,6 +388,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
 
   void _onSwipeBack() {
     HapticFeedback.mediumImpact();
+    _isExiting = true;
     _tts.stop();
     _tts.speak("واپس جا رہے ہیں");
     Navigator.of(context).pop();
