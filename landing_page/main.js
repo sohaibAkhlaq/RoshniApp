@@ -342,14 +342,16 @@ function speakAudioCue(text, lang = 'en-US') {
 }
 
 function attachAudioCuesToElements() {
-  const cards = document.querySelectorAll('.bento-card, .metric-card, .timeline-card');
+  const cards = document.querySelectorAll('.bento-card, .metric-card, .timeline-card, .glass-card');
   cards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
+    const playCue = () => {
       if (!isAudioCuesActive) return;
       const title = card.querySelector('h3, h4, .counter-value')?.innerText || '';
       const desc = card.querySelector('p')?.innerText || '';
       speakAudioCue(`${title}. ${desc}`, currentLang === 'ur' ? 'ur-PK' : 'en-US');
-    });
+    };
+    card.addEventListener('mouseenter', playCue);
+    card.addEventListener('click', playCue);
   });
 }
 
@@ -377,11 +379,56 @@ const bilingualDictionary = [
   { selector: '.bento-grid > div:nth-child(5) h3', en: 'AI Scene Description', ur: 'مناظر اور تصاویر کی تشریح' },
   { selector: '.bento-grid > div:nth-child(5) p', en: 'Cloud vision AI analyzing complex park scenes, indoor rooms, and photos to generate natural-language conversational captions in Urdu or English.', ur: 'پیچیدہ مناظر، کمروں اور تصاویر کو گہرائی سے سمجھ کر قدرتی اردو یا انگریزی زبان میں احوال سنانے والا جدید نظام۔' },
 
+  // Section 4: Timeline
+  { selector: '#story .badge-pill', en: '<svg class="roshni-icon icon-gold"><use href="#icon-sun"></use></svg> 24/7 Companion Timeline', ur: '<svg class="roshni-icon icon-gold"><use href="#icon-sun"></use></svg> چوبیس گھنٹے کا ساتھی' },
+  { selector: '#story-title', en: 'A Day with <span class="text-gradient-cyan">Roshni</span>', ur: '<span class="text-gradient-cyan">روشنی</span> کے ساتھ ایک دن' },
+  { selector: '#story > div > p', en: 'Watch how Roshni seamlessly accompanies a visually impaired user through independence, mobility, and confidence from morning till evening.', ur: 'دیکھیں کہ کس طرح روشنی ایک نابینا صارف کو صبح سے شام تک آزادی، نقل و حرکت، اور اعتماد کے ساتھ ہمراہ رکھتی ہے۔' },
+  { selector: '.timeline-grid > div:nth-child(1) h3', en: 'Morning Independence', ur: 'صبح کی آزادی' },
+  { selector: '.timeline-grid > div:nth-child(1) p', en: 'Reading morning Urdu newspapers, sorting official mail, and scanning utility bills independently at the breakfast table using Urdu OCR and Smart Document Scanner.', ur: 'صبح کے اخبارات پڑھنا، سرکاری ڈاک چھانٹنا، اور ناشتے کی میز پر بل اسکین کرنا اردو او سی آر کی مدد سے۔' },
+  { selector: '.timeline-grid > div:nth-child(2) h3', en: 'Confident Navigation', ur: 'پر اعتماد نقل و حرکت' },
+  { selector: '.timeline-grid > div:nth-child(2) p', en: 'Walking outdoors on busy city streets with real-time 3D camera radar announcing obstacles, stairs, and doorway entrances via Bluetooth earphones.', ur: 'مصروف سڑکوں پر چلتے ہوئے ریئل ٹائم تھری ڈی کیمرہ ریڈار کے ذریعے رکاوٹوں اور راستوں کی صوتی رہنمائی۔' },
+  { selector: '.timeline-grid > div:nth-child(3) h3', en: 'Seamless Shopping', ur: 'آسان خریداری' },
+  { selector: '.timeline-grid > div:nth-child(3) p', en: 'Verifying cash notes instantly at checkout with the PKR Currency Classifier. No more confusion between 500, 1000, or 5000 Rupee notes!', ur: 'خریداری کے دوران پیسوں کی فوری تصدیق۔ ۵۰۰، ۱۰۰۰، اور ۵۰۰۰ روپے کے نوٹوں میں اب کوئی الجھن نہیں!' },
+
+  // Section 5: Architecture
+  { selector: '#architecture .badge-pill', en: '<svg class="roshni-icon icon-cyan"><use href="#icon-cpu"></use></svg> Built Under the Hood', ur: '<svg class="roshni-icon icon-cyan"><use href="#icon-cpu"></use></svg> اندرونی ساخت' },
+  { selector: '#arch-title', en: 'Accessibility-First <br><span class="text-gradient-gold">Architecture & Engineering</span>', ur: 'معذوری کو مدنظر رکھ کر <br><span class="text-gradient-gold">بنایا گیا بہترین نظام</span>' },
+  { selector: '#architecture .subtitle-text', en: 'As you scroll here, the 3D smartphone separates into an exploded view showing the core layers that make Roshni reliable, lightning-fast, and 100% blind-accessible.', ur: 'یہاں وہ بنیادی ٹیکنالوجی دکھائی گئی ہے جو روشنی کو قابل اعتماد، تیز ترین اور ۱۰۰ فیصد نابینا افراد کے لیے قابل رسائی بناتی ہے۔' },
+  { selector: '#architecture .glass-card:nth-child(1) h3', en: '<svg class="roshni-icon"><use href="#icon-speaker"></use></svg> Voice & Screen Reader First', ur: '<svg class="roshni-icon"><use href="#icon-speaker"></use></svg> صوتی اور اسکرین ریڈر' },
+  { selector: '#architecture .glass-card:nth-child(1) p', en: 'Full Flutter Semantics integration built from day one. Every button, card, and image preview announces itself clearly.', ur: 'پہلے دن سے فلٹر سیمینٹکس کا استعمال۔ ہر بٹن اور کارڈ خود کو واضح آواز میں متعارف کرواتا ہے۔' },
+  { selector: '#architecture .glass-card:nth-child(2) h3', en: '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> Persistent Skip-Flow', ur: '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> بغیر لاگ ان کا نظام' },
+  { selector: '#architecture .glass-card:nth-child(2) p', en: 'Intelligent offline-ready session memory that never traps users in forced logins or complicated onboarding screens.', ur: 'ایک ذہین آف لائن نظام جو صارفین کو زبردستی لاگ ان یا پیچیدہ اسکرینوں میں نہیں پھنساتا۔' },
+  { selector: '#architecture .glass-card:nth-child(3) h3', en: '<svg class="roshni-icon"><use href="#icon-cpu"></use></svg> Offline Firestore Caching', ur: '<svg class="roshni-icon"><use href="#icon-cpu"></use></svg> آف لائن کیشنگ' },
+  { selector: '#architecture .glass-card:nth-child(3) p', en: 'Instant unlimited local database caching for seamless operation of Currency Classifier & Object Detection without internet.', ur: 'انٹرنیٹ کے بغیر کرنسی کی شناخت اور رکاوٹوں کی نشاندہی کے لیے لامحدود لوکل ڈیٹا بیس۔' },
+  { selector: '#architecture .glass-card:nth-child(4) h3', en: '<svg class="roshni-icon"><use href="#icon-shield"></use></svg> Hardware Shortcuts', ur: '<svg class="roshni-icon"><use href="#icon-shield"></use></svg> ہارڈویئر شارٹ کٹس' },
+  { selector: '#architecture .glass-card:nth-child(4) p', en: 'Triple-press power button integration for instant emergency camera launch and eyes-free gesture navigation.', ur: 'پاور بٹن کو تین بار دبانے سے ایمرجنسی کیمرہ اور اشاروں کے ذریعے نیویگیشن کا آغاز۔' },
+
+  // Section 6: Metrics
+  { selector: '#metrics .badge-pill', en: '<svg class="roshni-icon icon-gold"><use href="#icon-bar-chart"></use></svg> Benchmark Performance', ur: '<svg class="roshni-icon icon-gold"><use href="#icon-bar-chart"></use></svg> بہترین کارکردگی' },
+  { selector: '#metrics-title', en: 'Impact Metrics & <span class="text-gradient-cyan">AI Performance</span>', ur: 'اثرات اور <span class="text-gradient-cyan">اے آئی کی کارکردگی</span>' },
+  { selector: '#metrics > div > p.subtitle-text', en: 'Rigorous testing and benchmark data prove Roshni delivers unmatched accuracy and speed when it matters most.', ur: 'سخت ٹیسٹنگ اور ڈیٹا ثابت کرتے ہیں کہ روشنی بہترین درستگی اور رفتار فراہم کرتی ہے۔' },
+  { selector: '.metrics-grid .metric-card:nth-child(1) h3', en: 'PKR Currency Accuracy', ur: 'کرنسی کی درستگی' },
+  { selector: '.metrics-grid .metric-card:nth-child(1) p', en: 'Tested across worn, folded, and new Pakistani Rupee notes.', ur: 'پراانے، مڑے ہوئے اور نئے پاکستانی نوٹوں پر آزمایا گیا۔' },
+  { selector: '.metrics-grid .metric-card:nth-child(2) h3', en: 'Real-Time Edge Inference', ur: 'ریئل ٹائم رفتار' },
+  { selector: '.metrics-grid .metric-card:nth-child(2) p', en: 'Ultra-low latency object detection on standard mobile hardware.', ur: 'عام موبائل پر بھی انتہائی کم وقت میں رکاوٹوں کی شناخت۔' },
+  { selector: '.metrics-grid .metric-card:nth-child(3) h3', en: 'Screen Reader Compatible', ur: 'اسکرین ریڈر کے موافق' },
+  { selector: '.metrics-grid .metric-card:nth-child(3) p', en: 'Built from the ground up for full TalkBack and VoiceOver support.', ur: 'ٹاک بیک اور وائس اوور کی مکمل سپورٹ کے ساتھ تیار کردہ۔' },
+  { selector: '.metrics-grid .metric-card:nth-child(4) h3', en: 'Essential Vision Tools', ur: 'ضروری بصری ٹولز' },
+  { selector: '.metrics-grid .metric-card:nth-child(4) p', en: 'All integrated into a single lightweight, battery-friendly package.', ur: 'تمام فیچرز ایک ہلکی پھلکی اور بیٹری بچانے والی ایپ میں۔' },
+
   // Section 7: Download
   { selector: '#download-title', en: 'Ready to See the World in a <span class="text-gradient-gold">New Light?</span>', ur: 'کیا آپ دنیا کو ایک <span class="text-gradient-gold">نئی روشنی میں دیکھنے کے لیے تیار ہیں؟</span>' },
   { selector: '#download .subtitle-text', en: 'Download Roshni today on your Android or iOS device. Experience true visual independence, real-time Urdu OCR, and effortless PKR note recognition.', ur: 'آج ہی روشنی اپنے انڈرائیڈ یا آئی او ایس فون پر ڈاؤن لوڈ کریں۔ حقیقی بصری خود مختاری، اردو او سی آر اور کرنسی کی فوری پہچان کا تجربہ کریں۔' },
-  { selector: '#download .btn-primary span', en: '<svg class="roshni-icon"><use href="#icon-android"></use></svg> Android APK / Google Play', ur: '<svg class="roshni-icon"><use href="#icon-android"></use></svg> انڈرائیڈ اے پی کے / گوگل پلے' },
-  { selector: '#download .btn-secondary span', en: '<svg class="roshni-icon"><use href="#icon-apple"></use></svg> iOS App Store', ur: '<svg class="roshni-icon"><use href="#icon-apple"></use></svg> آئی او ایس ایپ اسٹور' }
+  { selector: '#download .btn-primary span', en: '<svg class="roshni-icon"><use href="#icon-android"></use></svg> Download Android APK (Direct)', ur: '<svg class="roshni-icon"><use href="#icon-android"></use></svg> انڈرائیڈ اے پی کے (براہ راست)' },
+  { selector: '#download .btn-secondary span', en: '<svg class="roshni-icon"><use href="#icon-apple"></use></svg> iOS App Store (Coming Soon)', ur: '<svg class="roshni-icon"><use href="#icon-apple"></use></svg> آئی او ایس ایپ اسٹور (جلد آ رہا ہے)' },
+
+  // Section 8: Footer
+  { selector: '.footer-section h3', en: '<svg class="roshni-icon icon-lg icon-gold"><use href="#icon-spark"></use></svg> Roshni (روشنی)', ur: '<svg class="roshni-icon icon-lg icon-gold"><use href="#icon-spark"></use></svg> روشنی' },
+  { selector: '.footer-section > div > div:nth-child(1) p', en: 'Making the world accessible, one feature at a time. Designed with love and high-contrast precision for visually impaired individuals in Pakistan.', ur: 'دنیا کو قابل رسائی بنانا، ایک وقت میں ایک قدم۔ پاکستان میں بصارت سے محروم افراد کے لیے محبت اور مکمل درستگی کے ساتھ ڈیزائن کیا گیا۔' },
+  { selector: '.footer-section > div > div:nth-child(2) h4', en: 'Core Features', ur: 'بنیادی خصوصیات' },
+  { selector: '.footer-section > div > div:nth-child(3) h4', en: 'Community', ur: 'کمیونٹی' },
+  { selector: '.footer-section > div > div:nth-child(4) h4', en: 'Developer Contact', ur: 'ڈیولپر سے رابطہ' },
+  { selector: '.footer-section > div > div:nth-child(4) > div:nth-child(3)', en: 'Lead Engineer & AI Architect', ur: 'لیڈ انجینئر اور اے آئی آرکیٹیکٹ' }
 ];
 
 function initLanguageSwitcher() {

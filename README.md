@@ -17,7 +17,9 @@
 
 ## 🌟 Overview
 
-**Roshni** is a state-of-the-art Flutter mobile application engineered from the ground up to provide true visual independence for the visually impaired community in Pakistan. By combining on-device **Edge AI** and **Cloud Vision capabilities**, Roshni translates the visual world into clear, native Urdu audio feedback in real-time.
+**Live Landing Page:** [https://roshni-app.vercel.app](https://roshni-app.vercel.app)
+
+Roshni is a mobile application that empowers visually impaired individuals by providing real-time **object detection**, **Urdu OCR reading**, **currency classification**, **document scanning**, and **photo description** — all through an intuitive, accessible interface with screen-reader support.
 
 Built with **accessibility-first architecture**, the app heavily utilizes Flutter's `Semantics` trees, Custom Tactile Gestures, and Haptic Feedback to ensure a seamless, screen-reader-optimized experience.
 
