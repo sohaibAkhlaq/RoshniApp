@@ -324,18 +324,21 @@ function initAccessibilityToggles() {
 }
 
 function speakAudioCue(text, lang = 'en-US') {
-  if (!isAudioCuesActive && !text.includes('Welcome')) return;
+  if (!isAudioCuesActive && !text.includes('Welcome') && !text.includes('اردو')) return;
   if (!speechSynth) return;
 
   speechSynth.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1.0;
+  utterance.lang = lang;
+  utterance.rate = currentLang === 'ur' ? 0.85 : 1.0; // Slightly slower for Urdu clarity
   utterance.pitch = 1.0;
   utterance.volume = 1.0;
 
   const voices = speechSynth.getVoices();
   if (lang === 'ur-PK' || text.includes('روشنی') || text.includes('اردو') || currentLang === 'ur') {
-    const urduVoice = voices.find(v => v.lang.includes('ur') || v.name.includes('Urdu') || v.name.includes('Pakistan'));
+    utterance.lang = 'ur-PK';
+    // Fallback to Arabic or Hindi if Urdu is strictly missing on this browser
+    const urduVoice = voices.find(v => v.lang.includes('ur') || v.name.includes('Urdu') || v.name.includes('Pakistan') || v.lang.includes('hi') || v.lang.includes('ar'));
     if (urduVoice) utterance.voice = urduVoice;
   }
   speechSynth.speak(utterance);

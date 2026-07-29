@@ -856,6 +856,18 @@ body.high-contrast-mode .btn-primary {
   .accessibility-bar { width: 90%; justify-content: center; }
 }
 
+@media (max-width: 576px) {
+  .section-container { padding: 40px 16px; }
+  .hero-section { padding-top: 100px; padding-bottom: 40px; }
+  .headline-xl { font-size: 2rem; letter-spacing: 0; }
+  .headline-lg { font-size: 1.6rem; }
+  .accessibility-bar { flex-wrap: wrap; width: 95%; border-radius: 20px; padding: 12px; gap: 8px; }
+  .acc-btn { width: 100%; justify-content: center; padding: 10px; }
+  .download-section-box { padding: 30px 20px; border-radius: 24px; }
+  .qr-box { padding: 10px; }
+  .qr-box img { width: 180px !important; height: 180px !important; }
+}
+
 /* ==========================================================================
    URDU NASTALIQ LOCALIZATION & RTL (RIGHT-TO-LEFT) SUPPORT
    ========================================================================== */
