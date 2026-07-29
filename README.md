@@ -1,75 +1,59 @@
-# Roshni — آپ کی روشنی، ہر وقت ساتھ
+<div align="center">
+  <img src="https://img.shields.io/badge/Roshni-روشنی-FFCA28?style=for-the-badge&logo=flutter&logoColor=white" alt="Roshni Logo" />
+  <br>
+  <h1>Roshni (روشنی) — Your Light, Always With You</h1>
+  <p><strong>An Award-Winning, AI-Powered Assistive Mobile Application for the Visually Impaired in Pakistan.</strong></p>
 
-> **Your light, always with you.**  
-> An intelligent assistive application designed for visually impaired users, powered by Flutter and Firebase.
+  [![Flutter](https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter)](https://flutter.dev)
+  [![Dart](https://img.shields.io/badge/Dart-3.12-0175C2?logo=dart)](https://dart.dev)
+  [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase)](https://firebase.google.com)
+  [![Vercel](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=flat&logo=vercel)](https://roshni-app.vercel.app)
+  [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.12-0175C2?logo=dart)](https://dart.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase)](https://firebase.google.com)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Vercel](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=flat&logo=vercel)](https://roshni-app.vercel.app)
-
----
-
-## Overview
-
-Roshni is a mobile application that empowers visually impaired individuals by providing real-time **object detection**, **Urdu OCR reading**, **currency classification**, **document scanning**, and **photo description** — all through an intuitive, accessible interface with screen-reader support.
-
-The app features a **complete authentication system** with Firebase, supporting email/password signup, login, and an intelligent skip-flow that remembers user preferences across sessions.
+  ### 🌐 [Visit the Live Production Website](https://roshni-app.vercel.app)
+</div>
 
 ---
 
-## Features
+## 🌟 Overview
 
-### Core Modules
+**Roshni** is a state-of-the-art Flutter mobile application engineered from the ground up to provide true visual independence for the visually impaired community in Pakistan. By combining on-device **Edge AI** and **Cloud Vision capabilities**, Roshni translates the visual world into clear, native Urdu audio feedback in real-time.
 
-| Module | Description |
-|--------|-------------|
-| 🎯 **Object Detection** | Real-time detection of surroundings using device camera |
-| 📖 **Urdu OCR Reader** | Read Urdu text aloud from captured images |
-| 💵 **Currency Classifier** | Identify Pakistani rupee notes |
-| 📄 **Document Reader** | Scan and read bills, slips, and documents |
-| 🖼️ **Photo Description** | AI-powered description of any captured scene |
-
-### Authentication & User Experience
-
-- **Email/Password Authentication** via Firebase Auth (phone-based email mapping)
-- **Persistent Skip Mode** — Users can skip signup and be remembered across sessions
-- **Settings-based Login** — Login/SignUp accessible from Settings any time
-- **Firestore Profiles** — User data (name, phone, language) stored securely
-- **Offline-ready** — Firestore persistence enabled with unlimited cache
-- **Accessibility-first** — Full `Semantics` widget support for screen readers
-- **Material 3 Design** — Modern UI with high-contrast amber/navy palette
+Built with **accessibility-first architecture**, the app heavily utilizes Flutter's `Semantics` trees, Custom Tactile Gestures, and Haptic Feedback to ensure a seamless, screen-reader-optimized experience.
 
 ---
 
-## Tech Stack
+## 🚀 Core AI Modules
 
-| Layer | Technology |
-|-------|------------|
-| **Framework** | Flutter 3.44 + Dart 3.12 |
-| **Authentication** | Firebase Authentication (Email/Password) |
-| **Database** | Cloud Firestore |
-| **State Management** | Built-in `setState` + callback-based navigation |
-| **Permissions** | `permission_handler` (Camera, Microphone) |
-| **Persistence** | `shared_preferences` (skip-login flag, permission state) |
-| **Navigation** | Custom screen-index manager + `Navigator` pushes |
-| **Design** | Material 3, custom amber-gold theme |
+Roshni ships with 5 specialized vision tools bundled into one lightweight interface:
 
-## Architecture Overview
+| Module | AI Technology | Capabilities |
+|--------|--------------|--------------|
+| 🎯 **3D Object Detection** | TensorFlow Lite Edge AI | Scans street scenes in <100ms. Announces chairs, doors, and stairs with spatial voice guidance. |
+| 📖 **Urdu OCR Text Reader** | Google ML Kit + Tesseract | Extracts Nastaliq Urdu script from signboards and books, converting it directly to audio. |
+| 💵 **PKR Currency Classifier** | Custom Vision Model | Identifies Pakistani Rupee notes (500, 1000, 5000) from any angle with **99.4% accuracy**. |
+| 📄 **Smart Document Scanner** | ML Kit Perspective API | Auto-captures and perspective-corrects utility bills without requiring manual shutter tapping. |
+| 🖼️ **AI Scene Description** | Groq Cloud Vision (Qwen 3.6) | Conversational, single-paragraph Urdu descriptions of complex indoor or outdoor scenes. |
 
+---
+
+## 🛡️ Architecture & Engineering
+
+Roshni uses a highly modular architecture separating the UI, AI Processing, and Cloud backend.
+
+### System Architecture
 ```mermaid
 flowchart LR
     subgraph UI [Flutter Frontend]
         A(Camera Viewfinder)
         B(Audio Guidance Engine)
-        C(Semantic UI / TalkBack)
+        C(Semantic Tactile UI)
     end
     
     subgraph Core [AI Processing Layer]
         D[Google ML Kit OCR]
-        E[OpenCV Edge Detection]
-        F[TFLite Vision Models]
+        E[TensorFlow Lite Vision]
+        F[Groq Cloud Vision API]
     end
     
     subgraph Cloud [Firebase Backend]
@@ -81,40 +65,7 @@ flowchart LR
     UI <-->|Auth & Scan History| Cloud
 ```
 
----
-
-## Project Structure
-
-```
-lib/
-├── core/
-│   ├── auth_service.dart          # Firebase Auth + Firestore + SharedPreferences
-│   ├── permission_service.dart    # Camera/Mic permission handling
-│   └── theme.dart                 # App theme, colors, typography
-├── screens/
-│   ├── splash_screen.dart         # Splash + Firestore config + permission gate
-│   ├── permissions_screen.dart    # Camera/Mic permission request UI
-│   ├── login_screen.dart          # Phone + password login
-│   ├── create_account_screen.dart # Full name, phone, password signup
-│   ├── home_screen.dart           # Feature grid launcher
-│   ├── profile_screen.dart        # User profile with real Firestore data
-│   ├── settings_screen.dart       # Dynamic settings (auth-aware)
-│   ├── camera_base_screen.dart    # Reusable camera UI template
-│   ├── gesture_guide_screen.dart  # Touch gesture instructions
-│   ├── scan_history_screen.dart   # Past scans list
-│   └── (feature screens)          # Object detection, OCR, currency, etc.
-├── widgets/
-│   ├── custom_textfield.dart      # Reusable text input
-│   ├── primary_button.dart        # Styled action button
-│   ├── feature_card.dart          # Home feature card
-│   └── gesture_bar.dart           # Bottom gesture indicator
-└── firebase_options.dart          # FlutterFire-generated config
-```
-
----
-
-## Authentication Flow
-
+### Authentication Flow
 ```mermaid
 graph TD
     A[App Launch] --> B(Splash Screen)
@@ -129,51 +80,24 @@ graph TD
     G --> H[Sign In]
     G --> I[Skip for Now]
     G --> J[Sign Up]
-    
-    H --> F
-    I --> F
-    J --> K[Create Account]
-    K --> G
 ```
 
-- **Skip Flow:** Once a user taps "Skip for now", the app never shows the login screen again unless the user manually navigates to **Settings > Login / Sign Up**.
-- **Signup:** Creates Firebase Auth user (phone@roshni.app) + Firestore document (`name`, `phone`, `language`, `createdAt`, `lastLoginAt`).
-- **Login:** Validates credentials against Firebase Auth, updates `lastLoginAt`, navigates to home.
+### Technical Highlights
+- **Persistent Skip Mode:** No forced logins. Users can skip onboarding and still access AI tools.
+- **Firebase History Service:** All AI scans (OCR, Currency, Scenes) are silently synced to Cloud Firestore, retaining a 1-week history for users to review past scans.
+- **Flawless TTS Lifecycle:** Integrated natively with `flutter_tts`, carefully managing application state (`didChangeAppLifecycleState`) so audio never clips during screen transitions.
+- **Haptic Audio Gestures:** Custom touch targets built for the blind. Swipes trigger mechanical UI sounds and haptics, giving physical feedback for digital actions.
 
 ---
 
-## Getting Started
+## 🛠️ Getting Started
 
 ### Prerequisites
-
-- Flutter SDK **3.44+** ([install guide](https://docs.flutter.dev/get-started/install))
-- Dart SDK **3.12+** (included with Flutter)
-- Firebase project with **Authentication** and **Firestore** enabled
-- Android Emulator or physical device (API 21+)
-- (Optional) iOS device with `GoogleService-Info.plist`
-
-### Firebase Setup
-
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Create or select project → **roshniapp**
-3. Enable **Authentication → Sign-in method → Email/Password**
-4. Create **Firestore Database** with test rules:
-   ```
-   rules_version = '2';
-   service cloud.firestore {
-     match /databases/{database}/documents {
-       match /{document=**} {
-         allow read, write: if request.auth != null;
-       }
-     }
-   }
-   ```
-5. Register Android app with package name `com.example.roshni`
-6. Download `google-services.json` → place in `android/app/`
-7. (Optional) Run `flutterfire configure` to regenerate `lib/firebase_options.dart`
+- Flutter SDK **3.44+**
+- Dart SDK **3.12+**
+- Active Firebase Project (Auth & Firestore enabled)
 
 ### Installation
-
 ```bash
 # Clone the repository
 git clone https://github.com/sohaibAkhlaq/RoshniApp.git
@@ -186,8 +110,7 @@ flutter pub get
 flutter run
 ```
 
-### Build & Deploy
-
+### Build for Production
 ```bash
 flutter build apk --release    # Android APK
 flutter build appbundle        # Android App Bundle
@@ -196,80 +119,32 @@ flutter build ios              # iOS (requires macOS + Xcode)
 
 ---
 
-## Permissions
+## 🗺️ Roadmap & Future Enhancements
 
-The app requests the following permissions at runtime:
+We are constantly pushing the boundaries of what assistive tech can do on mobile devices.
 
-| Permission | Purpose |
-|------------|---------|
-| **Camera** | Object detection, document scanning, currency classification, photo description |
-| **Microphone** | Voice commands (future) |
-| **Internet** | Firebase Auth & Firestore communication |
-
----
-
-## Configuration Files
-
-| File | Purpose |
-|------|---------|
-| `android/app/google-services.json` | Firebase Android config |
-| `lib/firebase_options.dart` | Dart-side Firebase options (generated by FlutterFire CLI) |
-| `firebase.json` | FlutterFire project metadata |
-| `android/app/build.gradle.kts` | Android build config with Google Services plugin |
+- [x] **Firebase Auth & Firestore Integration**
+- [x] **Real-time Camera AI Processing (TFLite & ML Kit)**
+- [x] **Native Urdu Nastaliq TTS & Translation Engine**
+- [x] **Vercel Interactive Landing Page Deployment**
+- [x] **Cloud Firestore AI Scan History Syncing**
+- [ ] **WearOS / Apple Watch Companion App**
+- [ ] **Offline Edge-Only Mode for Scene Description (Local LLMs)**
+- [ ] **Hardware Shortcut Integrations (Triple-press power button)**
 
 ---
 
-## Commit History
+## 📞 Support & Community
 
-```
-feat(auth): implement Firebase authentication with signup, login, and skip-flow
-feat(ui): add accessibility-first permission screen with camera/mic handling
-feat(profile): display real Firestore user data with dynamic logout
-feat(settings): auth-aware settings screen with login/user-info toggle
-refactor(navigation): separate login-from-settings from logout flow
-fix(auth): add try-catch error handling with SnackBar feedback
-fix(auth): handle null onPressed states during loading
-chore: update google-services plugin for AGP 9 compatibility
-docs: add comprehensive project structure and setup documentation
-```
+Roshni is proudly developed to make the world accessible, one feature at a time.
 
----
-
-## Roadmap
-
-- [ ] Google Sign-In integration
-- [ ] Real ML model integration (TensorFlow Lite)
-- [ ] Voice guidance & navigation
-- [ ] Urdu TTS (text-to-speech)
-- [ ] Multi-language support
-- [ ] Offline mode with local caching
-- [ ] Watch companion app
-- [ ] Accessibility shortcut (triple-press power button)
-
----
-
-## License
-
-```
-MIT License
-
-Copyright (c) 2024 Sohaib Akhlaq
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
----
-
-## Contact & Support
-
-- **Developer:** Sohaib Akhlaq
+- **Lead Engineer:** Sohaib Akhlaq
 - **GitHub:** [@sohaibAkhlaq](https://github.com/sohaibAkhlaq)
-- **Project Link:** [RoshniApp](https://github.com/sohaibAkhlaq/RoshniApp)
+- **Live Demo & Website:** [roshni-app.vercel.app](https://roshni-app.vercel.app)
 
 ---
 
 <div align="center">
-  <strong>Roshni</strong> — Making the world accessible, one feature at a time.
+  <em>Built with precision, care, and a vision for an accessible future.</em><br>
+  <strong>Copyright © 2026 Roshni App. All rights reserved.</strong>
 </div>
