@@ -154,9 +154,6 @@
         <a href="#download" class="btn-primary" aria-label="Download Roshni Now">
           <span><svg class="roshni-icon"><use href="#icon-download"></use></svg> Download Roshni Now</span>
         </a>
-        <a href="#simulator" class="btn-secondary" aria-label="Try Live AI Simulator">
-          <span><svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> Try Live AI Simulator</span>
-        </a>
       </div>
     </div>
   </section>
@@ -260,100 +257,7 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       SECTION 3: INTERACTIVE AI LIVE SIMULATOR (The "Test Roshni" Sandbox)
-       ========================================================================= -->
-  <section id="simulator" class="section-container" aria-labelledby="sim-title">
-    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
-      <div class="badge-pill"><svg class="roshni-icon icon-gold"><use href="#icon-sliders"></use></svg> Interactive Sandbox Experience</div>
-      <h2 id="sim-title" class="headline-lg">
-        Test Roshni <span class="text-gradient-gold">Live Simulator</span>
-      </h2>
-      <p class="subtitle-text" style="margin-left: auto; margin-right: auto;">
-        Click between real-world test modes below to watch the 3D smartphone canvas update in real-time and trigger voiced AI detection responses!
-      </p>
-    </div>
 
-    <div class="simulator-container" role="region" aria-label="Simulator Widget">
-      <!-- Left Controls -->
-      <div class="sim-controls">
-        <button class="sim-tab-btn active" data-mode="mode-a" aria-label="Test Pakistani Rupee Test Mode">
-          <div class="sim-tab-icon">
-            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-banknote"></use></svg>
-          </div>
-          <div>
-            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode A: Pakistani Rupee Test</div>
-            <div style="font-size: 0.9rem; color: var(--text-secondary);">Simulates instant 1000 PKR note scanning & Urdu voice announcement.</div>
-          </div>
-        </button>
-
-        <button class="sim-tab-btn" data-mode="mode-b" aria-label="Test Urdu OCR Test Mode">
-          <div class="sim-tab-icon">
-            <svg class="roshni-icon icon-md icon-cyan"><use href="#icon-book"></use></svg>
-          </div>
-          <div>
-            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode B: Urdu OCR Test</div>
-            <div style="font-size: 0.9rem; color: var(--text-secondary);">Scans an Urdu book page and displays highlighted extracted text.</div>
-          </div>
-        </button>
-
-        <button class="sim-tab-btn" data-mode="mode-c" aria-label="Test Street Obstacle Detection Mode">
-          <div class="sim-tab-icon">
-            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-radar"></use></svg>
-          </div>
-          <div>
-            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;">Mode C: Street Obstacle Detection</div>
-            <div style="font-size: 0.9rem; color: var(--text-secondary);">Shows bounding boxes around chairs, doors, & stairs with distances.</div>
-          </div>
-        </button>
-
-        <!-- Glowing Drag & Drop Upload Zone -->
-        <div id="sim-drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Upload or drop image to test Roshni AI live">
-          <input type="file" id="sim-file-input" accept="image/*" style="display: none;">
-          <div class="drop-zone-icon">
-            <svg class="roshni-icon icon-lg icon-gold"><use href="#icon-upload"></use></svg>
-          </div>
-          <div class="drop-zone-text">
-            <strong>Drag & Drop</strong> any photo, bill, or Rupee note here to test Roshni AI live!
-          </div>
-          <div style="font-size: 0.75rem; color: var(--roshni-gold); margin-top: 6px; font-weight: 600;">
-            <svg class="roshni-icon icon-sm"><use href="#icon-spark"></use></svg> Or click to browse files
-          </div>
-        </div>
-
-        <button id="trigger-instant-scan" class="btn-primary" style="margin-top: 12px; justify-content: center; width: 100%;">
-          <svg class="roshni-icon"><use href="#icon-zap"></use></svg> Trigger Instant Scan
-        </button>
-      </div>
-
-      <!-- Right Preview Card -->
-      <div class="sim-preview-box">
-        <div id="sim-laser-line" class="laser-scanner"></div>
-
-        <div style="position: relative; z-index: 10;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <span class="badge-pill" style="margin: 0;"><span class="pulse-dot"></span> Live AI Inference Active</span>
-            <div class="audio-waveform-box" aria-hidden="true">
-              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-            </div>
-          </div>
-          <h3 id="sim-active-title" class="headline-md" style="color: var(--roshni-cyan);">
-            <svg class="roshni-icon icon-md icon-gold"><use href="#icon-banknote"></use></svg> Pakistani Rupee Classifier
-          </h3>
-          <p id="sim-active-desc" class="subtitle-text" style="font-size: 1rem; margin-bottom: 20px;">
-            Simulating instant denomination detection for 500, 1000, and 5000 PKR notes with voiced feedback.
-          </p>
-        </div>
-
-        <div style="position: relative; z-index: 10; background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 202, 40, 0.3);">
-          <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px;">AI Output Narration:</div>
-          <div id="sim-active-badge" style="font-size: 1.25rem; font-weight: 700; color: var(--roshni-gold);">
-            <svg class="roshni-icon icon-gold"><use href="#icon-radar"></use></svg> 1000 PKR Note — Confidence 99.8%
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- =========================================================================
        SECTION 4: SCROLL-LINKED 3D STORYTELLING ("A Day with Roshni")
@@ -514,11 +418,11 @@
           Download Roshni today on your Android or iOS device. Experience true visual independence, real-time Urdu OCR, and effortless PKR note recognition.
         </p>
         <div class="btn-group">
-          <a href="https://github.com/sohaibAkhlaq/RoshniApp/releases/download/v1.0.0/roshni-app-release.apk" class="btn-primary" aria-label="Download Android APK">
-            <span><svg class="roshni-icon"><use href="#icon-android"></use></svg> Download Android APK</span>
+          <a href="https://github.com/sohaibAkhlaq/RoshniApp/releases" class="btn-primary" aria-label="Download Android APK">
+            <span><svg class="roshni-icon"><use href="#icon-android"></use></svg> Android APK (GitHub Releases)</span>
           </a>
-          <a href="#" class="btn-secondary" aria-label="Download on iOS App Store">
-            <span><svg class="roshni-icon"><use href="#icon-apple"></use></svg> iOS App Store</span>
+          <a href="#" class="btn-secondary" style="opacity: 0.7; cursor: not-allowed;" aria-label="iOS App Store Coming Soon" onclick="event.preventDefault();">
+            <span><svg class="roshni-icon"><use href="#icon-apple"></use></svg> iOS App Store (Coming Soon)</span>
           </a>
         </div>
       </div>

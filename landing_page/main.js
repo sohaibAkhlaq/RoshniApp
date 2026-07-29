@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAccessibilityToggles();
   initLanguageSwitcher();
   initMagneticHoverInteractions();
-  initSimulatorSandbox();
   initScrollAnimations();
 
   // Start Three.js Scene
@@ -363,7 +362,6 @@ const bilingualDictionary = [
   { selector: '#hero-title', en: 'Roshni — <br><span class="text-gradient-gold">Your Light, Always With You</span>', ur: 'روشنی — <br><span class="text-gradient-gold">آپ کی روشنی، ہر وقت ساتھ</span>' },
   { selector: '#hero .subtitle-text', en: 'Empowering visually impaired individuals across Pakistan with real-time AI object detection, Urdu OCR script reading, instant Pakistani Rupee (PKR) identification, and natural voice scene narration.', ur: 'بصارت سے محروم افراد کے لیے تیز ترین آف لائن مصنوعی ذہانت، پاکستانی کرنسی کی شناخت، اردو تحریر کی بلند خوانی اور حقیقی وقت میں راستے کی صوتی رہنمائی۔' },
   { selector: '#hero .btn-primary span', en: '<svg class="roshni-icon"><use href="#icon-download"></use></svg> Download Roshni Now', ur: '<svg class="roshni-icon"><use href="#icon-download"></use></svg> روشنی ابھی ڈاؤن لوڈ کریں' },
-  { selector: '#hero .btn-secondary span', en: '<svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> Try Live AI Simulator', ur: '<svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> لائیو سمیلیٹر آزمائیں' },
   // Section 2: Features Bento Grid
   { selector: '#features .badge-pill', en: '<svg class="roshni-icon icon-cyan"><use href="#icon-zap"></use></svg> 5+ Essential AI Tools in 1 Lightweight App', ur: '<svg class="roshni-icon icon-cyan"><use href="#icon-zap"></use></svg> ۵ سے زائد ضروری اے آئی ٹولز ایک ہلکی پھلکی ایپ میں' },
   { selector: '#features-title', en: 'The Interactive <span class="text-gradient-cyan">3D Feature Universe</span>', ur: 'روشنی کی <span class="text-gradient-cyan">جدید ترین خصوصیات</span>' },
@@ -378,18 +376,7 @@ const bilingualDictionary = [
   { selector: '.bento-grid > div:nth-child(4) p', en: 'Google ML Kit auto-capture and perspective correction for utility bills, official documents, and mail without manual shutter tapping.', ur: 'بجلی کے بلوں اور سرکاری دستاویزات کی خودکار تصویر اور سیدھ درست کرنے والا نظام، بغیر کسی بٹن دبائے۔' },
   { selector: '.bento-grid > div:nth-child(5) h3', en: 'AI Scene Description', ur: 'مناظر اور تصاویر کی تشریح' },
   { selector: '.bento-grid > div:nth-child(5) p', en: 'Cloud vision AI analyzing complex park scenes, indoor rooms, and photos to generate natural-language conversational captions in Urdu or English.', ur: 'پیچیدہ مناظر، کمروں اور تصاویر کو گہرائی سے سمجھ کر قدرتی اردو یا انگریزی زبان میں احوال سنانے والا جدید نظام۔' },
-  // Section 3: Simulator
-  { selector: '#simulator .badge-pill', en: '<svg class="roshni-icon icon-gold"><use href="#icon-sliders"></use></svg> Interactive Sandbox Experience', ur: '<svg class="roshni-icon icon-gold"><use href="#icon-sliders"></use></svg> لائیو سمیلیٹر کا تجربہ' },
-  { selector: '#sim-title', en: 'Test Roshni <span class="text-gradient-gold">Live Simulator</span>', ur: 'روشنی کا <span class="text-gradient-gold">لائیو سمیلیٹر آزمائیں</span>' },
-  { selector: '#simulator > div > p.subtitle-text', en: 'Click between real-world test modes below to watch the 3D smartphone canvas update in real-time and trigger voiced AI detection responses!', ur: 'نیچے دیے گئے مختلف طریقوں پر کلک کریں یا اپنی تصویر اپ لوڈ کر کے روشنی اے آئی کا جادو دیکھیں!' },
-  { selector: '.sim-controls > button:nth-child(1) div:nth-child(2) > div:nth-child(1)', en: 'Mode A: Pakistani Rupee Test', ur: 'موڈ اے: پاکستانی کرنسی ٹیسٹ' },
-  { selector: '.sim-controls > button:nth-child(1) div:nth-child(2) > div:nth-child(2)', en: 'Simulates instant 1000 PKR note scanning & Urdu voice announcement.', ur: '۱۰۰۰ روپے کے نوٹ کی فوری شناخت اور صوتی اعلان کا تجربہ کریں۔' },
-  { selector: '.sim-controls > button:nth-child(2) div:nth-child(2) > div:nth-child(1)', en: 'Mode B: Urdu OCR Test', ur: 'موڈ بی: اردو او سی آر ٹیسٹ' },
-  { selector: '.sim-controls > button:nth-child(2) div:nth-child(2) > div:nth-child(2)', en: 'Scans an Urdu book page and displays highlighted extracted text.', ur: 'اردو کتاب یا سائن بورڈ کی تحریر کو اسکین اور بلند خوانی کا تجربہ کریں۔' },
-  { selector: '.sim-controls > button:nth-child(3) div:nth-child(2) > div:nth-child(1)', en: 'Mode C: Street Obstacle Detection', ur: 'موڈ سی: راستے کی رکاوٹوں کا ریڈار' },
-  { selector: '.sim-controls > button:nth-child(3) div:nth-child(2) > div:nth-child(2)', en: 'Shows bounding boxes around chairs, doors, & stairs with distances.', ur: 'راستے میں موجود کرسیوں اور دروازوں کی فاصلے کے ساتھ نشاندہی۔' },
-  { selector: '.drop-zone-text', en: '<strong>Drag & Drop</strong> any photo, bill, or Rupee note here to test Roshni AI live!', ur: '<strong>ڈریگ اور ڈراپ کریں:</strong> کوئی بھی تصویر یا نوٹ یہاں ڈال کر روشنی اے آئی کا لائیو ٹیسٹ کریں!' },
-  { selector: '#trigger-instant-scan', en: '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> Trigger Instant Scan', ur: '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> فوری اسکین شروع کریں' },
+
   // Section 7: Download
   { selector: '#download-title', en: 'Ready to See the World in a <span class="text-gradient-gold">New Light?</span>', ur: 'کیا آپ دنیا کو ایک <span class="text-gradient-gold">نئی روشنی میں دیکھنے کے لیے تیار ہیں؟</span>' },
   { selector: '#download .subtitle-text', en: 'Download Roshni today on your Android or iOS device. Experience true visual independence, real-time Urdu OCR, and effortless PKR note recognition.', ur: 'آج ہی روشنی اپنے انڈرائیڈ یا آئی او ایس فون پر ڈاؤن لوڈ کریں۔ حقیقی بصری خود مختاری، اردو او سی آر اور کرنسی کی فوری پہچان کا تجربہ کریں۔' },
@@ -529,171 +516,7 @@ function initMagneticHoverInteractions() {
   });
 }
 
-// --- 7. Section 3: Interactive AI Live Simulator Sandbox & Drag-Drop (Vector Icons) ---
-function initSimulatorSandbox() {
-  const tabButtons = document.querySelectorAll('.sim-tab-btn');
-  const triggerBtn = document.getElementById('trigger-instant-scan');
-  const simTitle = document.getElementById('sim-active-title');
-  const simDesc = document.getElementById('sim-active-desc');
-  const simBadge = document.getElementById('sim-active-badge');
-  const laser = document.getElementById('sim-laser-line');
-  const dropZone = document.getElementById('sim-drop-zone');
-  const fileInput = document.getElementById('sim-file-input');
 
-  const modeData = {
-    'mode-a': {
-      title: '<svg class="roshni-icon icon-md icon-gold"><use href="#icon-banknote"></use></svg> Pakistani Rupee Classifier',
-      desc: 'Simulating instant denomination detection for 500, 1000, and 5000 PKR notes with voiced feedback.',
-      badge: '<svg class="roshni-icon icon-gold"><use href="#icon-radar"></use></svg> 1000 PKR Note — Confidence 99.8%',
-      speech: 'Scanning complete. One Thousand Pakistani Rupees detected with 99.8 percent confidence.',
-      speechUr: 'اسکین مکمل۔ ایک ہزار روپے کا نوٹ تصدیق ہو گیا ہے۔ درستی ۹۹.۸ فیصد۔'
-    },
-    'mode-b': {
-      title: '<svg class="roshni-icon icon-md icon-cyan"><use href="#icon-book"></use></svg> Urdu OCR Text Reader',
-      desc: 'Simulating Tesseract & ML Kit extracting Urdu script from books and signboards into clear voice narration.',
-      badge: '<svg class="roshni-icon icon-cyan"><use href="#icon-book"></use></svg> روشنی ہمیشہ آپ کے ساتھ — Extracted',
-      speech: 'Scanning complete. Extracted Urdu script: Roshni, your light always with you.',
-      speechUr: 'اسکین مکمل۔ اردو تحریر: روشنی ہمیشہ آپ کے ساتھ۔'
-    },
-    'mode-c': {
-      title: '<svg class="roshni-icon icon-md icon-gold"><use href="#icon-radar"></use></svg> Real-Time Obstacle Radar',
-      desc: 'Simulating bounding boxes around chairs, doors, and stairs with precise distance estimation in meters.',
-      badge: '<svg class="roshni-icon icon-gold"><use href="#icon-radar"></use></svg> Chair detected at 1.2 meters. Door at 2.8 meters.',
-      speech: 'Scanning complete. Obstacle radar detected: Chair at 1.2 meters ahead, doorway at 2.8 meters to the right.',
-      speechUr: 'خبردار۔ سامنے ۱.۲ میٹر پر کرسی اور دائیں جانب ۲.۸ میٹر پر دروازہ موجود ہے۔'
-    }
-  };
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      triggerHapticFeedback([15, 20]);
-
-      const mode = btn.getAttribute('data-mode');
-      const data = modeData[mode];
-      if (!data) return;
-
-      if (simTitle) simTitle.innerHTML = data.title;
-      if (simDesc) simDesc.innerHTML = data.desc;
-      if (simBadge) simBadge.innerHTML = data.badge;
-
-      if (typeof window.triggerPhoneLaserScan === 'function') {
-        window.triggerPhoneLaserScan(mode);
-      } else if (typeof window.updatePhoneScreenContent === 'function') {
-        window.updatePhoneScreenContent(mode);
-      }
-
-      const isUrdu = currentLang === 'ur' || mode === 'mode-b';
-      speakAudioCue(isUrdu && data.speechUr ? data.speechUr : data.speech, isUrdu ? 'ur-PK' : 'en-US');
-    });
-  });
-
-  if (triggerBtn) {
-    triggerBtn.addEventListener('click', () => {
-      triggerBtn.disabled = true;
-      triggerHapticFeedback([25, 40, 25, 40, 25]);
-      const isUrdu = currentLang === 'ur';
-      triggerBtn.innerHTML = isUrdu ? '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> اسکین جاری ہے...' : '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> Scanning Scene...';
-      if (laser) laser.classList.add('scanning');
-
-      const activeBtn = document.querySelector('.sim-tab-btn.active');
-      const mode = activeBtn ? activeBtn.getAttribute('data-mode') : 'mode-a';
-      const data = modeData[mode] || { speech: 'Scanning complete. Custom uploaded target verified.', speechUr: 'اسکین مکمل۔ اپ لوڈ کردہ تصویر کی تصدیق ہو گئی ہے۔' };
-
-      playScanningSound();
-      speakAudioCue(isUrdu ? 'کیمرہ فریم اسکین کیا جا رہا ہے۔ براہ کرم فون مستحکم رکھیں۔' : 'Scanning live camera frame. Please hold steady.', isUrdu ? 'ur-PK' : 'en-US');
-
-      if (typeof window.triggerPhoneLaserScan === 'function') {
-        window.triggerPhoneLaserScan(mode);
-      }
-
-      setTimeout(() => {
-        if (laser) laser.classList.remove('scanning');
-        triggerBtn.disabled = false;
-        triggerBtn.innerHTML = isUrdu ? '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> فوری اسکین شروع کریں' : '<svg class="roshni-icon"><use href="#icon-zap"></use></svg> Trigger Instant Scan';
-        playClickSound();
-        triggerHapticFeedback([30, 50, 30]);
-        const speakUr = isUrdu || mode === 'mode-b';
-        speakAudioCue(speakUr && data.speechUr ? data.speechUr : data.speech, speakUr ? 'ur-PK' : 'en-US');
-      }, 1600);
-    });
-  }
-
-  // --- Drag & Drop Image Upload Zone ---
-  if (dropZone && fileInput) {
-    dropZone.addEventListener('click', () => {
-      triggerHapticFeedback([15]);
-      fileInput.click();
-    });
-
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleUploadedImageFile(e.dataTransfer.files[0]);
-      }
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files[0]) {
-        handleUploadedImageFile(e.target.files[0]);
-      }
-    });
-  }
-
-  function handleUploadedImageFile(file) {
-    if (!file.type.startsWith('image/')) {
-      triggerHapticFeedback([50, 50, 50]);
-      speakAudioCue(currentLang === 'ur' ? 'براہ کرم درست تصویر اپ لوڈ کریں۔' : 'Please upload a valid image file.', currentLang === 'ur' ? 'ur-PK' : 'en-US');
-      return;
-    }
-
-    tabButtons.forEach(b => b.classList.remove('active'));
-    playClickSound();
-    triggerHapticFeedback([20, 30, 20]);
-
-    const isUrdu = currentLang === 'ur';
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        if (simTitle) simTitle.innerHTML = isUrdu ? `<svg class="roshni-icon icon-md icon-gold"><use href="#icon-upload"></use></svg> اپ لوڈ کردہ تصویر: ${file.name}` : `<svg class="roshni-icon icon-md icon-gold"><use href="#icon-upload"></use></svg> Custom Upload: ${file.name}`;
-        if (simDesc) simDesc.innerText = isUrdu ? 'روشنی اے آئی آپ کی اپ لوڈ کردہ تصویر کا تجزئیہ کر رہی ہے...' : 'Roshni Edge AI is scanning your uploaded photo for currencies, Urdu text, and obstacles...';
-        if (simBadge) simBadge.innerHTML = isUrdu ? '<svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> اے آئی لزر اسکین جاری ہے...' : '<svg class="roshni-icon icon-gold"><use href="#icon-zap"></use></svg> AI Laser Scanning in Progress...';
-        if (laser) laser.classList.add('scanning');
-
-        playScanningSound();
-        speakAudioCue(isUrdu ? 'تصویر اپ لوڈ ہو گئی ہے۔ صوتی اور لزر اسکین شروع کیا جا رہا ہے۔' : 'Image uploaded. Initiating real-time golden laser scan and neural bounding box detection.', isUrdu ? 'ur-PK' : 'en-US');
-
-        if (typeof window.triggerPhoneLaserScan === 'function') {
-          window.triggerPhoneLaserScan('custom', img);
-        }
-
-        setTimeout(() => {
-          if (laser) laser.classList.remove('scanning');
-          playClickSound();
-          triggerHapticFeedback([30, 60, 30]);
-          const tag = isUrdu ? '<svg class="roshni-icon icon-gold"><use href="#icon-shield"></use></svg> تصدیق: [۵۰۰۰ کا نوٹ - ۹۹.۶٪] اور [اردو سائن بورڈ]' : '<svg class="roshni-icon icon-gold"><use href="#icon-shield"></use></svg> Match: [5000 PKR Note - 99.6%] & [Urdu Script - Verified]';
-          if (simBadge) simBadge.innerHTML = tag;
-          speakAudioCue(isUrdu ? 'اسکین مکمل۔ پانچ ہزار روپے کا نوٹ اور اردو سائن بورڈ تصدیق ہو گیا ہے۔' : 'Scan complete. Five Thousand Pakistani Rupee note and Urdu signboard detected with 99.6 percent confidence.', isUrdu ? 'ur-PK' : 'en-US');
-        }, 1600);
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
 
 // --- 8. GSAP ScrollTrigger Animations & Counter Numbers ---
 function initScrollAnimations() {

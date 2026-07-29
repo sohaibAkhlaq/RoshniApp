@@ -47,7 +47,7 @@ class PhotoDescriptionService {
     return _callApi(
       imageBytes,
       prompt:
-          'Describe this photo in exactly one short, simple, conversational sentence in Urdu (پاکستانی اردو) for a blind Pakistani user. Output ONLY the short Urdu sentence in Urdu script—no English words, no intro, no reasoning (<think>), no extra commentary.',
+          'Describe this photo in exactly one short, simple, conversational sentence in Urdu (پاکستانی اردو) for a blind Pakistani user. Output ONLY the short Urdu sentence in Arabic/Urdu script (Nastaliq). DO NOT use Roman Urdu (English alphabet). No English words, no intro, no reasoning (<think>), no extra commentary.',
     );
   }
 
@@ -58,7 +58,7 @@ class PhotoDescriptionService {
     return _callApi(
       imageBytes,
       prompt:
-          'Provide a single-paragraph detailed description of this photo in conversational Urdu (پاکستانی اردو) for a blind Pakistani user. Include the main objects, people, layout, and setting in a few clear Urdu sentences in Urdu script—concise and strictly confined to one paragraph without bullet points, reasoning (<think>), or English translation.',
+          'Provide a single-paragraph detailed description of this photo in conversational Urdu (پاکستانی اردو) for a blind Pakistani user. Include the main objects, people, layout, and setting in a few clear sentences in Arabic/Urdu script (Nastaliq). DO NOT use Roman Urdu (English alphabet). Must be concise and strictly confined to one paragraph without bullet points, reasoning (<think>), or English translation.',
     );
   }
 
