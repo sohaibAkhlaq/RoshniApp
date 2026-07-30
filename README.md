@@ -39,6 +39,24 @@ Roshni ships with 5 specialized vision tools bundled into one lightweight interf
 
 ---
 
+## 🔒 Security, Compliance, & Trust
+
+Roshni operates under strict security and credibility standards to ensure the safety of our visually impaired user base:
+- **Offline-First AI Edge Processing:** Core features (Object Detection & Currency Classification) run 100% locally. Camera feeds are **never** uploaded to the cloud for these tasks.
+- **Strict Privacy Policy:** Our full Privacy Policy and Terms of Service explicitly prohibit selling user data or secretly recording camera feeds.
+- **Transparent URL Routing:** In-app legal links securely launch external browsers using Android 11+ Intent specifications (`LaunchMode.externalApplication`).
+- **Data Sanitization:** Handled natively by Firebase backend structures.
+
+---
+
+## ♿ Accessibility Compliance
+
+The application adheres to modern mobile accessibility standards:
+- **Double-Tap & Swipe Gestures:** Physical screen reading paradigms eliminate the need to locate visual buttons.
+- **Copy-to-Clipboard:** Blind users can long-press anywhere on the OCR screen to instantly copy scanned text, triggering a heavy haptic vibration.
+- **Visible Focus Indicators:** Fully compliant with Android TalkBack screen reader bounding boxes.
+- **Voice-Guided Onboarding:** A dedicated Gesture Guide screen physically teaches users how to use the app before they start scanning.
+
 ## 🛡️ Architecture & Engineering
 
 Roshni uses a highly modular architecture separating the UI, AI Processing, and Cloud backend.
