@@ -88,6 +88,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/icon.png
     - assets/models/yolov8n.tflite
     - assets/models/coco_labels.txt
     - assets/models/currency_classifier.tflite

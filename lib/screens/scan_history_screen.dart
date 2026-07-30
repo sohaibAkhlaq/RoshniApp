@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../core/auth_service.dart';
 
 class ScanHistoryScreen extends StatelessWidget {
   const ScanHistoryScreen({super.key});
@@ -36,18 +36,25 @@ class ScanHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
     final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan History'),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('scanHistory')
+      body: FutureBuilder<String>(
+        future: AuthService().getEffectiveUserId(),
+        builder: (context, userSnapshot) {
+          if (!userSnapshot.hasData) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFD97706)));
+          }
+          final userId = userSnapshot.data!;
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .collection('scanHistory')
             .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo))
             .orderBy('timestamp', descending: true)
             .snapshots(),

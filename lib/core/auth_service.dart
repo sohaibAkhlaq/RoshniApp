@@ -61,6 +61,19 @@ class AuthService {
 
   String? getUserId() => _auth.currentUser?.uid;
 
+  Future<String> getEffectiveUserId() async {
+    if (_auth.currentUser != null) {
+      return _auth.currentUser!.uid;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    String? guestId = prefs.getString('guest_id');
+    if (guestId == null) {
+      guestId = 'guest_${DateTime.now().millisecondsSinceEpoch}';
+      await prefs.setString('guest_id', guestId);
+    }
+    return guestId;
+  }
+
   String? getCurrentUserPhone() {
     final email = _auth.currentUser?.email;
     if (email == null || !email.endsWith('@roshni.app')) return null;
