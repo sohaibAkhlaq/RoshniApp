@@ -123,8 +123,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.privacy_tip_rounded,
                   onTap: () async {
                     final url = Uri.parse('https://roshni-app-alpha.vercel.app/privacy-policy.html');
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url);
+                    try {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                    } catch (e) {
+                      debugPrint('Could not launch $url');
                     }
                   },
                 ),
@@ -136,8 +138,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.description_rounded,
                   onTap: () async {
                     final url = Uri.parse('https://roshni-app-alpha.vercel.app/terms.html');
-                    if (await canLaunchUrl(url)) {
+                    try {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                    } catch (e) {
+                      debugPrint('Could not launch $url');
+                    }
+                  },
+                ),
+                _buildSettingsItem(
+                  context,
+                  7,
+                  'Contact Developer',
+                  'Email sohaibakhlaq14@gmail.com',
+                  Icons.email_rounded,
+                  onTap: () async {
+                    final url = Uri.parse('mailto:sohaibakhlaq14@gmail.com');
+                    try {
                       await launchUrl(url);
+                    } catch (e) {
+                      debugPrint('Could not launch $url');
                     }
                   },
                 ),

@@ -177,6 +177,19 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
           _resetToScan();
         }
       },
+      onLongPress: () {
+        if (_detectedText.isNotEmpty) {
+          Clipboard.setData(ClipboardData(text: _detectedText));
+          HapticFeedback.heavyImpact();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Copied to clipboard'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          _tts.speak("کاپي ہو گیا");
+        }
+      },
       onHorizontalDragEnd: (details) {
         if ((details.primaryVelocity ?? 0) > 250) {
           _onSwipeBack();

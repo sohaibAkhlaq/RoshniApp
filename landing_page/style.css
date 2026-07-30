@@ -858,7 +858,7 @@ body.high-contrast-mode .btn-primary {
 
 @media (max-width: 576px) {
   .section-container { padding: 40px 16px; }
-  .hero-section { padding-top: 100px; padding-bottom: 40px; }
+  .hero-section { padding-top: 220px; padding-bottom: 40px; }
   .headline-xl { font-size: 2rem; letter-spacing: 0; }
   .headline-lg { font-size: 1.6rem; }
   .accessibility-bar { flex-wrap: wrap; width: 95%; border-radius: 20px; padding: 12px; gap: 8px; }
