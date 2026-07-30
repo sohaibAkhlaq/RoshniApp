@@ -122,7 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Read our data handling policies',
                   Icons.privacy_tip_rounded,
                   onTap: () async {
-                    final url = Uri.parse('https://roshni-app-alpha.vercel.app/privacy-policy.html');
+                    final url = Uri.parse('https://roshni-app.vercel.app/privacy-policy.html');
                     try {
                       await launchUrl(url, mode: LaunchMode.externalApplication);
                     } catch (e) {
@@ -137,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'App usage terms and conditions',
                   Icons.description_rounded,
                   onTap: () async {
-                    final url = Uri.parse('https://roshni-app-alpha.vercel.app/terms.html');
+                    final url = Uri.parse('https://roshni-app.vercel.app/terms.html');
                     try {
                       await launchUrl(url, mode: LaunchMode.externalApplication);
                     } catch (e) {
