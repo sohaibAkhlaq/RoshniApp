@@ -391,7 +391,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
   Widget _buildViewfinderContent() {
     switch (_phase) {
       case _DocumentPhase.initializing:
-        return const Center(child: CircularProgressIndicator(color: Colors.white));
+        return const Center(child: CircularProgressIndicator(color: Color(0xFFD97706)));
 
       case _DocumentPhase.guidance:
         return _cameraService.buildPreview();
@@ -401,7 +401,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
         return Container(
           color: const Color(0xFF111827),
           alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: Colors.white),
+          child: const CircularProgressIndicator(color: Color(0xFFD97706)),
         );
 
       case _DocumentPhase.result:
@@ -578,7 +578,7 @@ class _DocumentScreenContentState extends State<_DocumentScreenContent>
         return const Center(
           child: Padding(
             padding: EdgeInsets.all(16.0),
-            child: CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(color: Color(0xFFD97706)),
           ),
         );
 

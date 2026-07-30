@@ -53,7 +53,7 @@ class ScanHistoryScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFD97706)));
           }
           if (snapshot.hasError) {
             // For testing/UI purposes without valid index, we can show a friendly message

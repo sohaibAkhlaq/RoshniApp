@@ -293,7 +293,7 @@ class _UrduOCRScreenState extends State<UrduOCRScreen> {
               onPressed: _isProcessing ? null : _captureAndRecognize,
             ),
           if (_status.contains('Detecting text') && _isProcessing)
-            const CircularProgressIndicator(color: Colors.white),
+            const CircularProgressIndicator(color: Color(0xFFD97706)),
           if (_detectedText.isNotEmpty || _status.contains('No readable text'))
             Row(
               children: [

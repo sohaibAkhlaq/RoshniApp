@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../core/auth_service.dart';
 import 'gesture_guide_screen.dart';
 
@@ -12,6 +14,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final AuthService _authService = AuthService();
+  final FlutterTts _tts = FlutterTts();
   UserData? _userData;
   bool _isLoading = true;
 
@@ -19,6 +22,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _load();
+    _initTts();
+  }
+
+  Future<void> _initTts() async {
+    await _tts.setLanguage("ur-PK");
+    await _tts.setSpeechRate(0.5);
+    await _tts.setVolume(1.0);
   }
 
   Future<void> _load() async {
@@ -39,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Settings & Shortcut'),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFD97706)))
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
               children: [
@@ -65,10 +75,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildSettingsItem(
                   context,
                   2,
-                  'Voice Language',
-                  'Urdu\\English',
-                  Icons.record_voice_over_rounded,
-                  onTap: () {},
+                  'About Roshni',
+                  'Hear about the app (Urdu)',
+                  Icons.info_outline_rounded,
+                  onTap: () async {
+                    HapticFeedback.heavyImpact();
+                    await _tts.speak("یہ روشنی ایپ ہے۔ یہ ایپ نابینا افراد کے لیے بنائی گئی ہے، تاکہ وہ اشیاء، کرنسی، اور تحریر کو آسانی سے پہچان سکیں۔");
+                  },
                 ),
                 _buildSettingsItem(
                   context,

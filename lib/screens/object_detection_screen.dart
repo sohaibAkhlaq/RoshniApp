@@ -430,7 +430,7 @@ class _ObjectDetectionScreenState extends State<ObjectDetectionScreen>
       color: const Color(0xFF111827),
       alignment: Alignment.center,
       child: _isInitializing
-          ? const CircularProgressIndicator(color: Colors.white)
+          ? const CircularProgressIndicator(color: Color(0xFFD97706))
           : const Icon(
               Icons.center_focus_strong_rounded,
               size: 72,
