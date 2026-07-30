@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy | Roshni</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFCA28'><path d='M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z'/></svg>" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .policy-container {
+      max-width: 800px;
+      margin: 100px auto 50px auto;
+      padding: 40px;
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      color: var(--text-secondary);
+    }
+    .policy-container h1 { color: var(--text-primary); margin-bottom: 20px; font-size: 2.5rem; }
+    .policy-container h2 { color: var(--roshni-gold); margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem; }
+    .policy-container p { margin-bottom: 15px; line-height: 1.8; }
+    .policy-container ul { margin-left: 20px; margin-bottom: 20px; }
+    .policy-container li { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <!-- Header (Simplified) -->
+  <header class="glass-header" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+    <div class="header-container">
+      <a href="/" class="logo" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: white;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFCA28"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/></svg>
+        <span>Roshni <span style="font-weight: 300; opacity: 0.7;">| Privacy Policy</span></span>
+      </a>
+      <a href="/" class="btn-primary" style="padding: 8px 16px; border-radius: 8px; text-decoration: none; color: white; background: var(--roshni-gold);">Back to Home</a>
+    </div>
+  </header>
+
+  <div class="policy-container">
+    <h1>Privacy Policy</h1>
+    <p><strong>Effective Date:</strong> July 30, 2026</p>
+
+    <h2>1. Introduction</h2>
+    <p>Welcome to Roshni (روشنی). We are deeply committed to protecting the privacy and security of our visually impaired users. This Privacy Policy explains how we handle your data when you use our mobile application and website.</p>
+
+    <h2>2. Data Collection & Usage</h2>
+    <ul>
+      <li><strong>Authentication Data:</strong> We use Firebase Authentication to manage secure logins (email/phone). We store your basic profile information (Name, Phone Number) securely in Cloud Firestore.</li>
+      <li><strong>Camera & Audio Processing:</strong> Roshni requires Camera and Microphone permissions to function. <strong>We do not secretly record, store, or sell your photos or audio.</strong> Most AI processing (Object Detection, Currency Classification, Document Scanning) happens locally on your device (Edge AI).</li>
+      <li><strong>Cloud Vision Features:</strong> For complex Scene Description and Urdu OCR, encrypted images may be sent to our secure Cloud Vision providers (Groq API). These images are processed instantly and immediately discarded; they are never used for training third-party models.</li>
+    </ul>
+
+    <h2>3. Local Storage & Cache</h2>
+    <p>We use local storage (SharedPreferences) and offline caching to store your scan history for up to 1 week. This data lives on your device to ensure you can access your history without an internet connection.</p>
+
+    <h2>4. Third-Party Services</h2>
+    <p>Our app relies on Google Firebase (Auth/Firestore) and Google ML Kit. Please refer to Google's official privacy policies regarding their infrastructure.</p>
+
+    <h2>5. Contact Us</h2>
+    <p>If you have any questions about this Privacy Policy, please contact the Lead Engineer at: <a href="mailto:sohaib.akhlaq@example.com" style="color: var(--roshni-cyan);">sohaib.akhlaq@example.com</a>.</p>
+  </div>
+</body>
+</html>

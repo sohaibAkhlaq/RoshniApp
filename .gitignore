@@ -77,3 +77,4 @@ bin/
 lib/main_inspect.dart
 lib/main_step0_test.dart
 *.py
+.vercel

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/auth_service.dart';
 import 'gesture_guide_screen.dart';
 
@@ -103,6 +104,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Icons.login_rounded,
                     onTap: () => Navigator.of(context).pop('login'),
                   ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 16.0, left: 4.0),
+                  child: Text(
+                    'Legal & About',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4B5563),
+                    ),
+                  ),
+                ),
+                _buildSettingsItem(
+                  context,
+                  5,
+                  'Privacy Policy',
+                  'Read our data handling policies',
+                  Icons.privacy_tip_rounded,
+                  onTap: () async {
+                    final url = Uri.parse('https://roshni-app-alpha.vercel.app/privacy-policy.html');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    }
+                  },
+                ),
+                _buildSettingsItem(
+                  context,
+                  6,
+                  'Terms of Service',
+                  'App usage terms and conditions',
+                  Icons.description_rounded,
+                  onTap: () async {
+                    final url = Uri.parse('https://roshni-app-alpha.vercel.app/terms.html');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(url);
+                    }
+                  },
+                ),
               ],
             ),
     );

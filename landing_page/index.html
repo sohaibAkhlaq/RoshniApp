@@ -7,6 +7,9 @@
   <meta name="description" content="Award-winning 3D interactive landing page for Roshni, an intelligent futuristic AI assistive mobile application for visually impaired individuals in Pakistan.">
   <meta name="keywords" content="Roshni, AI Assistive App, Visually Impaired, Urdu OCR, PKR Currency Classifier, Flutter, Object Detection, Pakistan">
   
+  <!-- Professional Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFCA28'><path d='M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z'/></svg>" />
+  
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -468,13 +471,13 @@
         <a href="#features" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-arrow-right"></use></svg> AI Scene Narration</a>
       </div>
 
-      <!-- Col 3: Community & Roadmap -->
+      <!-- Col 3: Community & Legal -->
       <div>
-        <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">Community</h4>
+        <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">Community & Legal</h4>
         <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-globe"></use></svg> GitHub Repository (MIT)</a><br>
-        <a href="https://github.com/sohaibAkhlaq/RoshniApp/blob/main/README.md" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-book"></use></svg> Developer Documentation</a><br>
         <a href="mailto:sohaib.akhlaq@example.com" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-message"></use></svg> Email Support</a><br>
-        <a href="https://github.com/sohaibAkhlaq/RoshniApp" target="_blank" rel="noopener" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-spark"></use></svg> Contribute on GitHub</a>
+        <a href="privacy-policy.html" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-book"></use></svg> Privacy Policy</a><br>
+        <a href="terms.html" class="footer-link"><svg class="roshni-icon icon-sm"><use href="#icon-book"></use></svg> Terms of Service</a>
       </div>
 
       <!-- Col 4: Developer Contact -->
@@ -494,6 +497,29 @@
       <div>Designed with Silicon Valley Awwwards-Level Precision • Dedicated to the Visually Impaired Community</div>
     </div>
   </footer>
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookie-banner" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); padding: 16px 24px; border-top: 1px solid rgba(255, 202, 40, 0.3); display: flex; justify-content: space-between; align-items: center; z-index: 1000; flex-wrap: wrap; gap: 16px; transform: translateY(100%); transition: transform 0.5s ease-out;">
+    <div style="color: var(--text-secondary); font-size: 0.9rem; max-width: 800px;">
+      We use essential cookies to ensure you get the best experience on our website. <a href="privacy-policy.html" style="color: var(--roshni-gold); text-decoration: underline;">Learn more</a>.
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button id="accept-cookies" class="btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Got it!</button>
+    </div>
+  </div>
+  
+  <script>
+    // Simple cookie consent logic
+    if (!localStorage.getItem('roshni-cookies-accepted')) {
+      setTimeout(() => {
+        document.getElementById('cookie-banner').style.transform = 'translateY(0)';
+      }, 1500);
+    }
+    document.getElementById('accept-cookies').addEventListener('click', () => {
+      localStorage.setItem('roshni-cookies-accepted', 'true');
+      document.getElementById('cookie-banner').style.transform = 'translateY(100%)';
+    });
+  </script>
 
   <!-- =========================================================================
        EXTERNAL JAVASCRIPT LIBRARIES & PROCEDURAL MODULES
